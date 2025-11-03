@@ -4,10 +4,10 @@ title: "Lab 2: Pipelines and Automation"
 description: "Setting up CI/CD pipelines for automated database deployments"
 prev_lab:
   title: "Lab 1: Getting Started"
-  url: "/training/flyway-autopilot/labs/lab1-getting-started/"
+  url: "/training/flyway-autopilot/labs/lab1-getting-started"
 next_lab:
   title: "Lab 3: Deployments"
-  url: "/training/flyway-autopilot/labs/lab3-deployments/"
+  url: "/training/flyway-autopilot/labs/lab3-deployments"
 ---
 
 # Lab 2: Pipelines and Automation

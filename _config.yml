@@ -15,13 +15,27 @@ plugins:
   - jekyll-sitemap
   - jekyll-include-cache
 
+# Additional Jekyll settings for better functionality
+permalink: /:categories/:title/
+paginate: 5 # amount of posts to show
+paginate_path: /page:num/
+timezone: Pacific/Auckland
+
+# Code highlighting and features
+enable_copy_code_button: true
+
 # Minimal Mistakes Theme Settings
-minimal_mistakes_skin: "default" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
+minimal_mistakes_skin: "air" # Professional light theme - "default", "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
+
+# Logo for professional branding (add a logo file later)
+logo: "/assets/images/logo.png"
 
 # Site Author
 author:
   name: "LetsMakeStuffGo"
+  avatar: "/assets/images/avatar.jpg"
   bio: "Database DevOps Training Specialists"
+  location: "New Zealand"
   links:
     - label: "Website"
       icon: "fas fa-fw fa-link"
@@ -29,6 +43,9 @@ author:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/LetsMakeStuffGo"
+    - label: "Assessment"
+      icon: "fas fa-fw fa-chart-line"
+      url: "https://assessment.makestuffgo.com"
 
 # Navigation
 masthead_title: "Database DevOps Autopilot"
@@ -40,9 +57,9 @@ main:
   - title: "Training"
     url: /training/flyway-autopilot/
   - title: "Documentation"
-    url: /docs/workshop-overview/
+    url: /docs/workshop-overview
   - title: "Prerequisites"
-    url: /docs/prerequisites/
+    url: /docs/prerequisites
 
 exclude:
   - Gemfile

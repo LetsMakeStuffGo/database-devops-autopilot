@@ -13,19 +13,19 @@ feature_row:
   - image_path: /assets/images/setup-icon.png
     title: "Quick Setup"
     excerpt: "Get started with Flyway in minutes. Learn project structure, environment configuration, and essential concepts."
-    url: "/training/flyway-autopilot/labs/lab1-getting-started/"
+    url: "/training/flyway-autopilot/labs/lab1-getting-started"
     btn_label: "Lab 1: Setup"
     btn_class: "btn--primary"
   - image_path: /assets/images/pipeline-icon.png
     title: "CI/CD Integration"
     excerpt: "Automate database deployments with GitHub Actions and Azure DevOps. Build reliable migration pipelines."
-    url: "/training/flyway-autopilot/labs/lab2-pipelines-automation/"
+    url: "/training/flyway-autopilot/labs/lab2-pipelines-and-automation"
     btn_label: "Lab 2: Pipelines"
     btn_class: "btn--primary"
   - image_path: /assets/images/production-icon.png
     title: "Production Ready"
     excerpt: "Implement zero-downtime deployments, monitoring, rollback strategies, and enterprise-grade safety measures."
-    url: "/training/flyway-autopilot/labs/lab6-production/"
+    url: "/training/flyway-autopilot/labs/lab6-best-practices"
     btn_label: "Lab 6: Production"
     btn_class: "btn--primary"
 ---
@@ -39,7 +39,7 @@ Transform your database deployment process from manual, error-prone procedures t
 ### What You'll Learn
 
 - **Database Version Control**: Integrate schema changes with your application code lifecycle
-- **Automated Migrations**: Build and deploy database changes through CI/CD pipelines  
+- **Automated Migrations**: Build and deploy database changes through CI/CD pipelines
 - **Production Safety**: Implement rollback strategies, validation checks, and monitoring
 - **Team Collaboration**: Support multiple developers working on database changes simultaneously
 - **Enterprise Practices**: Apply industry best practices for database DevOps at scale
@@ -53,16 +53,16 @@ Transform your database deployment process from manual, error-prone procedures t
 
 ### Training Path
 
-1. **[Lab 1: Setup & First Steps](training/flyway-autopilot/labs/lab1-getting-started/)** - Environment setup and Flyway basics
-2. **[Lab 2: Pipelines & Automation](training/flyway-autopilot/labs/lab2-pipelines-automation/)** - CI/CD integration fundamentals  
-3. **[Lab 3: Advanced Deployments](training/flyway-autopilot/labs/lab3-deployments/)** - Complex schema changes and validations
-4. **[Lab 4: Version Control](training/flyway-autopilot/labs/lab4-version-control/)** - Branching strategies and rollback procedures
-5. **[Lab 5: Monitoring](training/flyway-autopilot/labs/lab5-monitoring/)** - Troubleshooting and performance optimization
-6. **[Lab 6: Production](training/flyway-autopilot/labs/lab6-production/)** - Enterprise deployment strategies
+1. **[Lab 1: Setup & First Steps](training/flyway-autopilot/labs/lab1-getting-started)** - Environment setup and Flyway basics
+2. **[Lab 2: Pipelines & Automation](training/flyway-autopilot/labs/lab2-pipelines-and-automation)** - CI/CD integration fundamentals
+3. **[Lab 3: Advanced Deployments](training/flyway-autopilot/labs/lab3-deployments)** - Complex schema changes and validations
+4. **[Lab 4: Version Control](training/flyway-autopilot/labs/lab4-version-control)** - Branching strategies and rollback procedures
+5. **[Lab 5: Monitoring](training/flyway-autopilot/labs/lab5-monitoring-and-rollback)** - Troubleshooting and performance optimization
+6. **[Lab 6: Production](training/flyway-autopilot/labs/lab6-best-practices)** - Enterprise deployment strategies
 
 ### Ready to Get Started?
 
-Check the [prerequisites](docs/prerequisites/) and begin with [Lab 1: Setup & First Steps](training/flyway-autopilot/labs/lab1-getting-started/).
+Check the [prerequisites](docs/prerequisites) and begin with [Lab 1: Setup & First Steps](training/flyway-autopilot/labs/lab1-getting-started).
 
 ---
 

@@ -39,14 +39,14 @@ training_sidebar:
 
 training:
   - title: "Getting Started"
-    url: /training/flyway-autopilot/labs/lab1-getting-started/
+    url: /training/flyway-autopilot/labs/lab1-getting-started
   - title: "Pipelines & Automation"
-    url: /training/flyway-autopilot/labs/lab2-pipelines-and-automation/
+    url: /training/flyway-autopilot/labs/lab2-pipelines-and-automation
   - title: "Deployments"
-    url: /training/flyway-autopilot/labs/lab3-deployments/
+    url: /training/flyway-autopilot/labs/lab3-deployments
   - title: "Version Control"
-    url: /training/flyway-autopilot/labs/lab4-version-control/
+    url: /training/flyway-autopilot/labs/lab4-version-control
   - title: "Monitoring & Rollback"
-    url: /training/flyway-autopilot/labs/lab5-monitoring-and-rollback/
+    url: /training/flyway-autopilot/labs/lab5-monitoring-and-rollback
   - title: "Best Practices"
-    url: /training/flyway-autopilot/labs/lab6-best-practices/
+    url: /training/flyway-autopilot/labs/lab6-best-practices

@@ -4,10 +4,10 @@ title: "Lab 3: Deployments"
 description: "Advanced deployment strategies and handling complex migration scenarios"
 prev_lab:
   title: "Lab 2: Pipelines and Automation"
-  url: "/training/flyway-autopilot/labs/lab2-pipelines-and-automation/"
+  url: "/training/flyway-autopilot/labs/lab2-pipelines-and-automation"
 next_lab:
   title: "Lab 4: Version Control"
-  url: "/training/flyway-autopilot/labs/lab4-version-control/"
+  url: "/training/flyway-autopilot/labs/lab4-version-control"
 ---
 
 # Lab 3: Deployments

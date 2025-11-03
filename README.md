@@ -18,6 +18,7 @@ A comprehensive, hands-on training course for mastering database migrations, con
 This training transforms your understanding of database development from isolated, manual deployments to a collaborative, automated, and repeatable process using Flyway. Over the course of this series, you'll experience the complete workflow: capturing schema changes, generating versioned migrations, validating deployments, and orchestrating releases through CI/CD pipelines.
 
 By the end, you'll understand how to:
+
 - Version control your database schema alongside application code
 - Automate database builds and deployment validation
 - Integrate database changes into GitHub Actions or Azure DevOps pipelines
@@ -43,9 +44,10 @@ After completing this course, participants will be able to:
 
 ## Workshop Labs
 
-Each lab is a self-contained, 30–45 minute hands-on exercise. Labs build sequentially but can also be completed independently with provided sample data. 
+Each lab is a self-contained, 30–45 minute hands-on exercise. Labs build sequentially but can also be completed independently with provided sample data.
 
 ### **Lab 1: Setup and First Steps**
+
 **Time**: 30 minutes | **Difficulty**: Beginner
 
 Get up and running with Flyway. Download Flyway CLI, create your first project, provision test databases, and explore the command-line interface. Verify your environment is ready for development.
@@ -62,6 +64,7 @@ Get up and running with Flyway. Download Flyway CLI, create your first project, 
 ---
 
 ### **Lab 2: Understanding Migrations and Pipelines**
+
 **Time**: 40 minutes | **Difficulty**: Beginner
 
 Learn the core migration strategies that Flyway uses: versioned migrations and pipeline automation. Understand when and why to use each approach, explore naming conventions, and examine existing migration scripts.
@@ -78,6 +81,7 @@ Learn the core migration strategies that Flyway uses: versioned migrations and p
 ---
 
 ### **Lab 3: Advanced Deployments**
+
 **Time**: 45 minutes | **Difficulty**: Intermediate
 
 Master complex deployment scenarios including schema changes, data migrations, and environment-specific configurations. Use Flyway to handle real-world deployment challenges safely.
@@ -94,6 +98,7 @@ Master complex deployment scenarios including schema changes, data migrations, a
 ---
 
 ### **Lab 4: Version Control and Rollbacks**
+
 **Time**: 40 minutes | **Difficulty**: Intermediate
 
 Transform captured schema changes into versioned migration scripts. Learn advanced versioning strategies, implement safe rollback procedures, and handle migration conflicts.
@@ -110,6 +115,7 @@ Transform captured schema changes into versioned migration scripts. Learn advanc
 ---
 
 ### **Lab 5: Monitoring and Troubleshooting**
+
 **Time**: 35 minutes | **Difficulty**: Intermediate
 
 Set up comprehensive monitoring for database deployments. Learn to debug failed migrations, optimize performance for large datasets, and implement audit trails.
@@ -126,6 +132,7 @@ Set up comprehensive monitoring for database deployments. Learn to debug failed 
 ---
 
 ### **Lab 6: Production Strategies**
+
 **Time**: 50 minutes | **Difficulty**: Advanced
 
 Prepare for and execute production deployments with enterprise-grade safety measures. Implement zero-downtime patterns, security controls, and disaster recovery procedures.
@@ -183,18 +190,21 @@ database-devops-autopilot/
 Before starting, ensure you have:
 
 ### **Software & Tools**
+
 - **Flyway CLI**: [Download the latest version](https://flywaydb.org/download/) (Community Edition is free)
 - **Git & GitHub**: [Create a GitHub account](https://github.com) if you don't have one
 - **Database**: SQL Server 2019+ or PostgreSQL 12+ (local, cloud-based, or containerized)
 - **Text Editor**: Visual Studio Code or similar for editing migration scripts and configuration files
 
 ### **Knowledge & Experience**
+
 - Basic SQL (CREATE TABLE, ALTER TABLE, INSERT, SELECT)
 - Comfort with command-line/terminal usage
 - Familiarity with Git basics (clone, commit, push, pull)
 - Understanding of CI/CD concepts (pipelines, builds, deployments)
 
 ### **Optional but Recommended**
+
 - Docker or container experience (for spinning up test databases)
 - Azure DevOps or GitHub Actions experience
 - Database administration background
@@ -203,17 +213,17 @@ Before starting, ensure you have:
 
 ## Key Concepts at a Glance
 
-| **Concept** | **Definition** |
-|---|---|
-| **Migration** | A versioned SQL script that evolves your database schema from one version to the next |
-| **Baseline** | A migration script that establishes the starting point for a database version |
-| **Schema Model** | A collection of object-level SQL scripts that represent the desired end state of your database |
-| **Versioned Migration** | A timestamped migration script (V prefix) that describes an incremental change |
-| **Checksum** | A hash Flyway calculates for each migration to ensure integrity |
-| **flyway_schema_history** | The metadata table Flyway maintains to track applied migrations |
-| **Drift Detection** | A feature that identifies untracked schema changes |
-| **Rollback Script** | A migration script that reverses changes from a forward migration |
-| **CI/CD Pipeline** | An automated workflow that tests, validates, and deploys database changes |
+| **Concept**               | **Definition**                                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Migration**             | A versioned SQL script that evolves your database schema from one version to the next          |
+| **Baseline**              | A migration script that establishes the starting point for a database version                  |
+| **Schema Model**          | A collection of object-level SQL scripts that represent the desired end state of your database |
+| **Versioned Migration**   | A timestamped migration script (V prefix) that describes an incremental change                 |
+| **Checksum**              | A hash Flyway calculates for each migration to ensure integrity                                |
+| **flyway_schema_history** | The metadata table Flyway maintains to track applied migrations                                |
+| **Drift Detection**       | A feature that identifies untracked schema changes                                             |
+| **Rollback Script**       | A migration script that reverses changes from a forward migration                              |
+| **CI/CD Pipeline**        | An automated workflow that tests, validates, and deploys database changes                      |
 
 ---
 

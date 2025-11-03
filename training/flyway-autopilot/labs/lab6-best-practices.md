@@ -4,7 +4,7 @@ title: "Lab 6: Best Practices"
 description: "Industry best practices and advanced techniques for enterprise database DevOps"
 prev_lab:
   title: "Lab 5: Monitoring and Rollback"
-  url: "/training/flyway-autopilot/labs/lab5-monitoring-and-rollback/"
+  url: "/training/flyway-autopilot/labs/lab5-monitoring-and-rollback"
 ---
 
 # Lab 6: Best Practices

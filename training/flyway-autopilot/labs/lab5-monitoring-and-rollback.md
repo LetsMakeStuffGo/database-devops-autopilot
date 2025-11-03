@@ -4,10 +4,10 @@ title: "Lab 5: Monitoring and Rollback"
 description: "Implement comprehensive monitoring and establish robust rollback procedures"
 prev_lab:
   title: "Lab 4: Version Control"
-  url: "/training/flyway-autopilot/labs/lab4-version-control/"
+  url: "/training/flyway-autopilot/labs/lab4-version-control"
 next_lab:
   title: "Lab 6: Best Practices"
-  url: "/training/flyway-autopilot/labs/lab6-best-practices/"
+  url: "/training/flyway-autopilot/labs/lab6-best-practices"
 ---
 
 # Lab 5: Monitoring and Rollback
