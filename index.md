@@ -4,31 +4,73 @@ title: "Database DevOps Autopilot"
 header:
   overlay_color: "#000"
   overlay_filter: "0.5"
-  overlay_image: /assets/images/database-hero.jpg
   actions:
     - label: "Start Training"
       url: "/training/flyway-autopilot/"
+      btn_class: "btn--primary btn--large"
 excerpt: "Master enterprise-grade database DevOps practices with automated, reliable, and scalable migration pipelines using Flyway."
 feature_row:
-  - image_path: /assets/images/flyway-logo.png
-    title: "Flyway Autopilot"
-    excerpt: "Learn comprehensive database migration strategies with Flyway's powerful automation framework."
-    url: "/training/flyway-autopilot/"
-    btn_label: "Start Training"
+  - image_path: /assets/images/setup-icon.png
+    title: "Quick Setup"
+    excerpt: "Get started with Flyway in minutes. Learn project structure, environment configuration, and essential concepts."
+    url: "/training/flyway-autopilot/labs/lab1-getting-started/"
+    btn_label: "Lab 1: Setup"
     btn_class: "btn--primary"
-  - image_path: /assets/images/devops-icon.png
+  - image_path: /assets/images/pipeline-icon.png
     title: "CI/CD Integration"
-    excerpt: "Integrate database changes seamlessly into your existing DevOps pipelines and workflows."
-    url: "/docs/workshop-overview/"
-    btn_label: "Learn More"
+    excerpt: "Automate database deployments with GitHub Actions and Azure DevOps. Build reliable migration pipelines."
+    url: "/training/flyway-autopilot/labs/lab2-pipelines-automation/"
+    btn_label: "Lab 2: Pipelines"
     btn_class: "btn--primary"
-  - image_path: /assets/images/monitoring-icon.png
+  - image_path: /assets/images/production-icon.png
     title: "Production Ready"
-    excerpt: "Implement monitoring, rollback strategies, and enterprise-grade deployment patterns."
-    url: "/docs/prerequisites/"
-    btn_label: "Get Started"
+    excerpt: "Implement zero-downtime deployments, monitoring, rollback strategies, and enterprise-grade safety measures."
+    url: "/training/flyway-autopilot/labs/lab6-production/"
+    btn_label: "Lab 6: Production"
     btn_class: "btn--primary"
 ---
+
+{% include feature_row %}
+
+## About This Training
+
+Transform your database deployment process from manual, error-prone procedures to automated, reliable, and scalable migration pipelines. This comprehensive workshop teaches you to implement enterprise-grade database DevOps practices using Flyway.
+
+### What You'll Learn
+
+- **Database Version Control**: Integrate schema changes with your application code lifecycle
+- **Automated Migrations**: Build and deploy database changes through CI/CD pipelines  
+- **Production Safety**: Implement rollback strategies, validation checks, and monitoring
+- **Team Collaboration**: Support multiple developers working on database changes simultaneously
+- **Enterprise Practices**: Apply industry best practices for database DevOps at scale
+
+### Course Format
+
+- **Duration**: 3-4 hours total (6 modular labs, 30-45 minutes each)
+- **Format**: Self-paced, hands-on exercises with real database scenarios
+- **Prerequisites**: Basic SQL knowledge, Git familiarity, access to SQL Server or PostgreSQL
+- **Outcome**: Complete CI/CD pipeline for database deployments
+
+### Training Path
+
+1. **[Lab 1: Setup & First Steps](training/flyway-autopilot/labs/lab1-getting-started/)** - Environment setup and Flyway basics
+2. **[Lab 2: Pipelines & Automation](training/flyway-autopilot/labs/lab2-pipelines-automation/)** - CI/CD integration fundamentals  
+3. **[Lab 3: Advanced Deployments](training/flyway-autopilot/labs/lab3-deployments/)** - Complex schema changes and validations
+4. **[Lab 4: Version Control](training/flyway-autopilot/labs/lab4-version-control/)** - Branching strategies and rollback procedures
+5. **[Lab 5: Monitoring](training/flyway-autopilot/labs/lab5-monitoring/)** - Troubleshooting and performance optimization
+6. **[Lab 6: Production](training/flyway-autopilot/labs/lab6-production/)** - Enterprise deployment strategies
+
+### Ready to Get Started?
+
+Check the [prerequisites](docs/prerequisites/) and begin with [Lab 1: Setup & First Steps](training/flyway-autopilot/labs/lab1-getting-started/).
+
+---
+
+## About LetsMakeStuffGo
+
+This training is brought to you by [LetsMakeStuffGo](https://www.makestuffgo.com) - specialists in Cloud and DevOps Engineering practices. We help organizations implement world-class DevOps practices that deliver measurable business value.
+
+**Assess Your DevOps Maturity**: Take our [FREE DevOps & FinOps Assessment](https://assessment.makestuffgo.com) to see how your organization compares to industry standards.
 
 {% include feature_row %}
 

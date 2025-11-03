@@ -2,8 +2,6 @@
 layout: single
 title: Flyway Autopilot Training
 description: Master database DevOps with automated migration pipelines
-sidebar:
-  nav: "training_sidebar"
 toc: true
 toc_label: "Training Contents"
 toc_icon: "graduation-cap"

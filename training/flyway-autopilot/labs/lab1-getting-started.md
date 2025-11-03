@@ -2,8 +2,6 @@
 layout: single
 title: "Lab 1: Getting Started"
 description: "Introduction to Flyway Autopilot and setting up your development environment"
-sidebar:
-  nav: "training_sidebar"
 toc: true
 toc_label: "Lab Steps"
 toc_icon: "tasks"
