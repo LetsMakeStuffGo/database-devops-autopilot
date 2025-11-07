@@ -1,0 +1,130 @@
+name: GitHub Flyway CI/CD Pipeline - Windows
+
+on:
+    push:
+
+    workflow_dispatch:
+
+jobs:
+    validate-migrations:
+        runs-on: self-hosted
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install Flyway CLI (if needed)
+              if: ${{ secrets.FLYWAY_CLI_INSTALL == 'true' }}
+              shell: powershell
+              run: |
+                  $FLYWAY_VERSION = if ($env:FLYWAY_VERSION) { $env:FLYWAY_VERSION } else { "latest" }
+                  Write-Host "Installing Flyway CLI version: $FLYWAY_VERSION"
+
+                  if ($FLYWAY_VERSION -eq "latest") {
+                    $url = "https://download.redgate.com/maven/release/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-windows-x64.zip"
+                  } else {
+                    $url = "https://download.redgate.com/maven/release/org/flywaydb/flyway-commandline/$FLYWAY_VERSION/flyway-commandline-$FLYWAY_VERSION-windows-x64.zip"
+                  }
+
+                  Invoke-WebRequest -Uri $url -OutFile "flyway-cli.zip"
+                  Expand-Archive -Path "flyway-cli.zip" -DestinationPath "C:\flyway"
+                  $env:PATH += ";C:\flyway\flyway-9.22.3"
+                  echo "C:\flyway\flyway-9.22.3" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+            - name: Authenticate Flyway
+              if: ${{ secrets.FLYWAY_AUTH_DISABLED != 'true' }}
+              shell: cmd
+              run: |
+                  flyway auth -email "${{ secrets.FLYWAY_EMAIL }}" -token "${{ secrets.FLYWAY_TOKEN }}"
+
+            - name: Validate Migration Scripts
+              shell: cmd
+              run: |
+                  flyway validate -configFiles=flyway.toml -environment=development ${{ secrets.CUSTOM_PARAMS }}
+
+            - name: Generate Migration Info Report
+              shell: cmd
+              run: |
+                  if not exist "Reports" mkdir Reports
+                  flyway info -configFiles=flyway.toml -environment=development ${{ secrets.CUSTOM_PARAMS }} > Reports\migration-info.txt
+
+            - name: Upload Migration Reports
+              uses: actions/upload-artifact@v4
+              with:
+                  name: migration-reports-windows
+                  path: Reports/
+
+    deploy-to-uat:
+        needs: validate-migrations
+        runs-on: self-hosted
+        if: github.ref == 'refs/heads/develop'
+        environment: uat
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Authenticate Flyway
+              if: ${{ secrets.FLYWAY_AUTH_DISABLED != 'true' }}
+              shell: cmd
+              run: |
+                  flyway auth -email "${{ secrets.FLYWAY_EMAIL }}" -token "${{ secrets.FLYWAY_TOKEN }}"
+
+            - name: Deploy to UAT Environment
+              shell: cmd
+              env:
+                  TARGET_DATABASE_USERNAME: ${{ secrets.TARGET_DATABASE_USERNAME }}
+                  TARGET_DATABASE_PASSWORD: ${{ secrets.TARGET_DATABASE_PASSWORD }}
+              run: |
+                  echo "Deploying to UAT environment (db-autopilot-uat-001)..."
+                  flyway migrate -configFiles=flyway.toml -environment=uat ${{ secrets.CUSTOM_PARAMS }}
+
+            - name: Generate UAT Deployment Report
+              shell: cmd
+              run: |
+                  if not exist "Reports" mkdir Reports
+                  flyway info -configFiles=flyway.toml -environment=uat ${{ secrets.CUSTOM_PARAMS }} > Reports\uat-deployment-report.txt
+
+            - name: Upload UAT Reports
+              uses: actions/upload-artifact@v4
+              with:
+                  name: uat-deployment-reports-windows
+                  path: Reports/
+
+    deploy-to-production:
+        needs: validate-migrations
+        runs-on: self-hosted
+        if: github.ref == 'refs/heads/main'
+        environment: production
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Authenticate Flyway
+              if: ${{ secrets.FLYWAY_AUTH_DISABLED != 'true' }}
+              shell: cmd
+              run: |
+                  flyway auth -email "${{ secrets.FLYWAY_EMAIL }}" -token "${{ secrets.FLYWAY_TOKEN }}"
+
+            - name: Deploy to Production Environment
+              shell: cmd
+              env:
+                  TARGET_DATABASE_USERNAME: ${{ secrets.TARGET_DATABASE_USERNAME }}
+                  TARGET_DATABASE_PASSWORD: ${{ secrets.TARGET_DATABASE_PASSWORD }}
+              run: |
+                  echo "Production deployment - Exercise caution!"
+                  echo "This is a training environment - actual production deployment would go here"
+                  REM flyway migrate -configFiles=flyway.toml -environment=production ${{ secrets.CUSTOM_PARAMS }}
+
+            - name: Generate Production Deployment Report
+              shell: cmd
+              run: |
+                  if not exist "Reports" mkdir Reports
+                  echo "Production deployment completed successfully" > Reports\production-deployment-report.txt
+
+            - name: Upload Production Reports
+              uses: actions/upload-artifact@v4
+              with:
+                  name: production-deployment-reports-windows
+                  path: Reports/

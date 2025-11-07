@@ -1,59 +1,26 @@
+---
+layout: single
+title: "Prerequisites"
+description: "System requirements and setup guide for Flyway AutoPilot training"
+toc: true
+toc_label: "Requirements"
+toc_icon: "clipboard-check"
+---
+
 # Prerequisites
-
-## System Requirements
-
-### Hardware Requirements
-
-**Minimum Specifications:**
-
-- 8 GB RAM
-- 50 GB available disk space
-- 2 CPU cores
-- Stable internet connection
-
-**Recommended Specifications:**
-
-- 16 GB RAM or more
-- 100 GB available disk space
-- 4 CPU cores or more
-- High-speed internet connection
-
-### Operating System Support
-
-This workshop supports the following operating systems:
-
-- **Windows 10/11** (Professional or Enterprise)
-- **macOS 10.15** or later
-- **Linux distributions**: Ubuntu 20.04+, CentOS 8+, RHEL 8+, Amazon Linux 2
 
 ## Required Software
 
 ### Core Development Tools
 
-#### 1. Docker Desktop
+#### 1. Git
 
-**Purpose**: Container runtime for database and application services
-
-**Installation:**
-
-- **Windows/macOS**: Download from [docker.com](https://www.docker.com/products/docker-desktop)
-- **Linux**: Follow [Docker installation guide](https://docs.docker.com/engine/install/)
-
-**Verification:**
-
-```bash
-docker --version
-docker-compose --version
-```
-
-#### 2. Git
-
-**Purpose**: Version control for database migrations and collaboration
+**Purpose**: Version control for database migrations and team collaboration
 
 **Installation:**
 
 - **Windows**: Download from [git-scm.com](https://git-scm.com/download/win)
-- **macOS**: Install via Homebrew: `brew install git`
+- **macOS**: Install via Homebrew: `brew install git` or download from git-scm.com
 - **Linux**: Use package manager: `sudo apt install git` (Ubuntu) or `sudo yum install git` (CentOS)
 
 **Configuration:**
@@ -63,101 +30,191 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@company.com"
 ```
 
-#### 3. Database Client Tools
+**Verification:**
 
-**PostgreSQL Client (psql)**
+```bash
+git --version
+```
 
-- **Windows**: Download from [PostgreSQL Downloads](https://www.postgresql.org/download/windows/)
-- **macOS**: Install via Homebrew: `brew install postgresql`
-- **Linux**: Use package manager: `sudo apt install postgresql-client`
+#### 2. Azure CLI
+
+**Purpose**: Azure resource management and authentication
+
+**Installation:**
+
+- **Windows**: Download MSI from [Azure CLI documentation](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows)
+- **macOS**: Install via Homebrew: `brew install azure-cli`
+- **Linux**: Follow [Azure CLI installation guide](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux)
 
 **Verification:**
 
 ```bash
-psql --version
+az --version
+az login
 ```
+
+#### 3. SQL Server Management Studio (SSMS) or Azure Data Studio
+
+**Purpose**: Database client for Azure SQL Database management
+
+**Choose One:**
+
+**SQL Server Management Studio (Windows only)**
+
+- Download from [Microsoft SSMS](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
+- Full-featured database management tool
+
+**Azure Data Studio (Cross-platform)**
+
+- Download from [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio)
+- Lightweight, modern database tool
+
+**Verification:**
+
+- Connect to a test Azure SQL Database
+- Verify you can execute SQL queries
 
 ### Development Environment
 
-#### 1. Code Editor
-
-Choose one of the following:
+#### Code Editor
 
 **Visual Studio Code (Recommended)**
 
 - Download from [code.visualstudio.com](https://code.visualstudio.com/)
 - Install recommended extensions:
-  - SQL Tools
-  - Docker
-  - GitLens
-  - YAML
+  - **SQL Server (mssql)**: Azure SQL Database connectivity
+  - **GitLens**: Enhanced Git integration
+  - **YAML**: GitHub Actions workflow editing
+  - **Azure Account**: Azure integration
 
 **Alternative Options:**
 
 - IntelliJ IDEA (with Database Tools plugin)
 - Sublime Text (with SQL syntax highlighting)
-- Vim/Emacs (with appropriate plugins)
+- Any text editor with SQL and YAML support
 
-#### 2. Terminal/Command Line
+#### Terminal/Command Line
 
-- **Windows**: PowerShell 5.1+ or Windows Terminal
+**Required**: Command line access for running Flyway commands and Git operations
+
+- **Windows**: PowerShell 5.1+ (recommended) or Command Prompt
 - **macOS**: Terminal.app or iTerm2
-- **Linux**: Bash shell
+- **Linux**: Bash shell (default on most distributions)
 
-## Workshop-Specific Tools
+## Training-Specific Tools
 
-### Flyway Community Edition
+### Flyway AutoPilot
 
-**Purpose**: Database migration tool (Community Edition is sufficient for this workshop)
+**Note**: Flyway AutoPilot will be downloaded and configured during Lab 1. No pre-installation required.
 
-**Installation:**
+**Requirements**:
 
-```bash
-# Download and install Flyway
-wget https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz
-tar -xzf flyway-commandline-9.22.3-linux-x64.tar.gz
-sudo mv flyway-9.22.3 /opt/flyway
-sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
-```
+- Valid Redgate account (free registration available)
+- Internet access for downloading Flyway CLI
+- Java 8 or higher (automatically detected or will be guided through installation)
 
-**Verification:**
+### GitHub Account
 
-```bash
-flyway --version
-```
+**Purpose**: Version control repository hosting and CI/CD pipeline execution
 
-## Network and Security Requirements
+**Requirements**:
 
-### Network Access
+- Free GitHub account at [github.com](https://github.com)
+- Basic familiarity with Git commands (clone, commit, push)
+- Ability to create repositories and configure secrets
 
-Ensure your environment allows outbound connections to:
+## Network and Access Requirements
 
-- **Docker Hub**: `hub.docker.com` (port 443)
-- **GitHub**: `github.com` (port 443)
-- **Package Repositories**: Various (ports 80, 443)
-- **Database Ports**: 5432 (PostgreSQL), 3306 (MySQL), 1433 (SQL Server)
+### Internet Connectivity
 
-### Firewall Configuration
+Ensure your environment has access to:
 
-Configure your firewall to allow:
+- **Azure Portal**: `portal.azure.com` (HTTPS/443)
+- **GitHub**: `github.com` (HTTPS/443)
+- **Redgate License Server**: Various endpoints (HTTPS/443)
+- **Flyway Downloads**: `repo1.maven.org` (HTTPS/443)
+- **Azure SQL Database**: `*.database.windows.net` (SQL/1433)
 
-- Docker container communication
-- Local development server access (ports 3000-8080)
-- Database client connections
+### Azure SQL Database Connectivity
+
+**Required Ports**:
+
+- Port 1433 for Azure SQL Database connections
+- HTTPS/443 for Azure management APIs
+
+**Firewall Configuration**:
+
+- Azure SQL Database firewall will be configured during lab exercises
+- Corporate firewalls may need to allow connections to `*.database.windows.net`
 
 ### Corporate Environment Considerations
 
-If working in a corporate environment:
+**Proxy Settings**: Configure Git and Azure CLI to work with corporate proxy if required
 
-- **Proxy Settings**: Configure tools to work with corporate proxy
-- **Certificate Authority**: Install corporate CA certificates if required
-- **Security Policies**: Ensure Docker and database tools are approved
-- **VPN Access**: May be required for cloud platform access
+**Certificate Requirements**: Install corporate CA certificates if your organization uses custom certificates
+
+**Security Policies**: Ensure Azure CLI and database tools comply with organizational security policies
+
+## Knowledge Prerequisites
+
+### Required Knowledge
+
+**SQL Fundamentals**:
+
+- Basic SQL syntax (SELECT, INSERT, UPDATE, DELETE)
+- Understanding of database tables, views, and indexes
+- Familiarity with database schema concepts
+
+**Git Basics**:
+
+- Understanding of version control concepts
+- Basic Git commands (clone, add, commit, push, pull)
+- Familiarity with branching and merging concepts
+
+**Command Line Comfort**:
+
+- Basic command line navigation
+- Running commands and interpreting output
+- Setting environment variables
+
+### Helpful But Not Required
+
+**Azure Experience**: Basic familiarity with Azure Portal navigation
+**CI/CD Concepts**: Understanding of automated deployment pipelines
+**Database DevOps**: Experience with database change management
+
+## Pre-Training Checklist
+
+Before starting the training, verify you have:
+
+- [ ] Active Azure subscription with admin access
+- [ ] Git installed and configured with your credentials
+- [ ] Azure CLI installed and authenticated (`az login` successful)
+- [ ] Database client tool installed (SSMS or Azure Data Studio)
+- [ ] Visual Studio Code with recommended extensions
+- [ ] GitHub account created and accessible
+- [ ] Stable internet connection
+- [ ] Administrative access to install software if needed
 
 ## Getting Help
 
-### Pre-Workshop Support
+### During Setup
 
-If you encounter issues during setup:
+If you encounter issues during prerequisite setup:
 
-1. **Check Documentation**: Review the official documentation for each tool
+1. **Check Official Documentation**: Each tool provides comprehensive installation guides
+2. **Verify System Compatibility**: Ensure your OS version is supported
+3. **Corporate IT Support**: Contact IT if working in a managed environment
+4. **Community Resources**: Check GitHub issues and Stack Overflow for common problems
+
+### Training Support
+
+During the training labs:
+
+- Each lab includes detailed troubleshooting sections
+- Sample error messages and solutions are provided
+- Links to official documentation for advanced configuration
+
+---
+
+_Once you've completed all prerequisites, you're ready to begin with [Lab 1: Environment Setup](../training/flyway-autopilot/labs/lab1-environment-setup/)_

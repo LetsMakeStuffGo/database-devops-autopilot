@@ -1,171 +1,54 @@
-# Workshop Overview
+---
+layout: single
+title: "Workshop Overview"
+description: "Comprehensive Database DevOps AutoPilot training program for enterprise database deployments"
+toc: true
+toc_label: "Overview Contents"
+toc_icon: "clipboard-list"
+---
 
-## Database DevOps Autopilot Training
+# Database DevOps AutoPilot Training
 
-Welcome to the comprehensive Database DevOps Autopilot workshop. This intensive training program is designed to transform your database deployment processes through automation, monitoring, and industry best practices.
+Intensive hands-on training for **Flyway AutoPilot** - intelligent database DevOps with automated schema change detection and migration generation using Azure SQL Database.
 
-### What You'll Learn
+## What You'll Learn
 
-This hands-on workshop covers the complete journey from manual database deployments to fully automated, enterprise-grade database DevOps pipelines.
+Transform database deployments from manual processes to intelligent, automated workflows:
 
-#### Core Learning Areas
+- **AutoPilot Schema Detection**: Automatically capture database changes without manual scripting
+- **Azure SQL Database Integration**: Enterprise cloud database environments  
+- **Migration Script Generation**: Automated production-ready migration creation
+- **GitHub Actions CI/CD**: Complete automated deployment pipelines
+- **E-commerce Platform Evolution**: Real-world business scenarios and progressive development
 
-**🚀 Automated Migrations**
+## Training Structure
 
-- Set up Flyway Autopilot for seamless database schema updates
-- Integrate migrations with CI/CD pipelines
-- Implement automated testing and validation
+**Duration**: 4-6 hours (6 labs, 30-60 minutes each)  
+**Format**: Progressive hands-on exercises with e-commerce platform scenarios  
+**Prerequisites**: Basic SQL knowledge, Azure account, Git familiarity
 
-**📊 Monitoring & Observability**
+### Complete Lab Path
 
-- Configure comprehensive deployment monitoring
-- Set up proactive alerting systems
-- Implement performance tracking and optimization
+1. **[Environment Setup](../training/flyway-autopilot/labs/lab1-environment-setup/)** - Azure SQL Database and AutoPilot configuration
+2. **[Repository Configuration](../training/flyway-autopilot/labs/lab2-repository-configuration/)** - Flyway project setup and Git integration  
+3. **[Database Provisioning](../training/flyway-autopilot/labs/lab3-database-provisioning/)** - E-commerce baseline deployment
+4. **[Schema Change Capture](../training/flyway-autopilot/labs/lab4-schema-change-capture/)** - AutoPilot change detection
+5. **[Migration Script Generation](../training/flyway-autopilot/labs/lab5-migration-script-generation/)** - Automated script creation
+6. **[CI/CD Deployment](../training/flyway-autopilot/labs/lab6-cicd-deployment/)** - GitHub Actions pipeline implementation
 
-**🔒 Security & Compliance**
+## Target Audience
 
-- Apply enterprise security best practices
-- Implement audit trails and compliance frameworks
-- Manage secrets and access controls
+- Database Administrators automating deployments
+- DevOps Engineers implementing database CI/CD
+- Software Developers managing schema changes
+- System Architects designing scalable database operations
 
-**⚡ Performance Optimization**
+## Getting Started
 
-- Optimize large-scale data migrations
-- Implement efficient batch processing
-- Design for high availability and scalability
-
-**🔄 Version Control & Collaboration**
-
-- Master Git-based database version control
-- Handle team collaboration and merge conflicts
-- Implement review and approval workflows
-
-**🛡️ Disaster Recovery**
-
-- Design robust rollback procedures
-- Implement multi-region deployment strategies
-- Create comprehensive incident response plans
-
-### Workshop Structure
-
-The workshop consists of 6 progressive hands-on labs:
-
-1. **[Lab 1: Getting Started](training/flyway-autopilot/labs/lab1-getting-started.md)**
-
-   - Environment setup and basic concepts
-   - Your first automated migration
-
-2. **[Lab 2: Pipelines and Automation](training/flyway-autopilot/labs/lab2-pipelines-and-automation.md)**
-
-   - CI/CD integration
-   - Environment-specific deployments
-
-3. **[Lab 3: Deployments](training/flyway-autopilot/labs/lab3-deployments.md)**
-
-   - Advanced deployment strategies
-   - Blue-green and canary deployments
-
-4. **[Lab 4: Version Control](training/flyway-autopilot/labs/lab4-version-control.md)**
-
-   - Team collaboration workflows
-   - Conflict resolution strategies
-
-5. **[Lab 5: Monitoring and Rollback](training/flyway-autopilot/labs/lab5-monitoring-and-rollback.md)**
-
-   - Comprehensive monitoring setup
-   - Automated rollback procedures
-
-6. **[Lab 6: Best Practices](training/flyway-autopilot/labs/lab6-best-practices.md)**
-   - Enterprise-grade security and compliance
-   - High availability and disaster recovery
-
-### Target Audience
-
-This workshop is designed for:
-
-- **Database Administrators** looking to automate deployment processes
-- **DevOps Engineers** implementing database CI/CD pipelines
-- **Software Developers** working with database schema changes
-- **System Architects** designing scalable database operations
-- **IT Managers** planning database modernization initiatives
-
-### Workshop Format
-
-**Duration**: 6-8 hours (can be split across multiple sessions)
-
-**Format**: Hands-on labs with real-world scenarios
-
-**Prerequisites**: See [Prerequisites Guide](prerequisites.md)
-
-**Delivery Options**:
-
-- Self-paced online training
-- Instructor-led workshops
-- Team training sessions
-
-### Learning Outcomes
-
-By completing this workshop, participants will:
-
-✅ **Implement Automated Deployments**
-
-- Set up end-to-end database CI/CD pipelines
-- Automate testing, validation, and deployment processes
-
-✅ **Master Monitoring and Alerting**
-
-- Configure comprehensive monitoring dashboards
-- Implement proactive alerting for deployment issues
-
-✅ **Apply Security Best Practices**
-
-- Implement role-based access controls
-- Establish audit trails and compliance frameworks
-
-✅ **Design for Reliability**
-
-- Create robust rollback and disaster recovery procedures
-- Implement high-availability deployment strategies
-
-✅ **Enable Team Collaboration**
-
-- Establish effective version control workflows
-- Implement review and approval processes
-
-### Real-World Applications
-
-The skills learned in this workshop directly apply to:
-
-- **Enterprise Database Modernization**: Transform legacy deployment processes
-- **Cloud Migration Projects**: Implement cloud-native database operations
-- **Compliance Initiatives**: Meet regulatory requirements with automated audit trails
-- **Performance Optimization**: Reduce deployment times and minimize downtime
-- **Risk Mitigation**: Implement robust testing and rollback procedures
-
-### Workshop Materials
-
-All workshop materials are provided including:
-
-- Complete lab instructions with step-by-step guidance
-- Sample code and configuration files
-- Best practice templates and checklists
-- Troubleshooting guides and references
-
-### Getting Started
-
-Ready to begin your database DevOps journey?
-
-1. **Review Prerequisites**: Check the [prerequisites guide](prerequisites.md) to ensure your environment is ready
-2. **Start with Lab 1**: Begin with [Lab 1: Getting Started](training/flyway-autopilot/labs/lab1-getting-started.md)
-3. **Join the Community**: Connect with other learners and experts in our community forums
-
-### Support and Resources
-
-- **Technical Support**: Available during workshop hours
-- **Community Forum**: Connect with peers and experts
-- **Additional Resources**: Comprehensive reference materials and documentation
-- **Follow-up Sessions**: Optional advanced topics and Q&A sessions
+1. **Check Prerequisites**: Review [system requirements](../prerequisites/)
+2. **Start Training**: Begin with [Lab 1: Environment Setup](../training/flyway-autopilot/labs/lab1-environment-setup/)
+3. **Access Platform**: Complete training at [Flyway AutoPilot Training](../training/flyway-autopilot/)
 
 ---
 
-_This workshop is part of the Database DevOps Autopilot training program. For more information about advanced topics, certification programs, or enterprise training options, please contact our training team._
+*Progressive e-commerce platform examples demonstrate real-world database DevOps scenarios throughout the training.*

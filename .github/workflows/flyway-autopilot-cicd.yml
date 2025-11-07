@@ -1,0 +1,61 @@
+name: Flyway AutoPilot CI/CD Pipeline
+
+on:
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main]
+
+jobs:
+    validate-migrations:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Flyway CLI
+              run: |
+                  wget -qO- https://download.redgate.com/maven/release/org/flywaydb/flyway-commandline/9.22.3/flyway-commandline-9.22.3-linux-x64.tar.gz | tar xvz
+                  sudo mv flyway-9.22.3 /opt/flyway
+                  sudo ln -s /opt/flyway/flyway /usr/local/bin/flyway
+
+            - name: Validate Migration Scripts
+              run: |
+                  flyway validate -configFiles=flyway.toml -environment=development
+
+            - name: Generate Migration Report
+              run: |
+                  flyway info -configFiles=flyway.toml -environment=development > Reports/migration-info.txt
+
+            - name: Upload Reports
+              uses: actions/upload-artifact@v4
+              with:
+                  name: migration-reports
+                  path: Reports/
+
+  deploy-to-uat:
+    needs: validate-migrations
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to UAT Environment
+      run: |
+        echo "Deploying to UAT environment (db-autopilot-uat-001)..."
+        # Add deployment steps here
+    
+  deploy-to-production:
+    needs: validate-migrations
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to Production Environment
+      run: |
+        echo "Production deployment would go here..."
+        # This is a training environment - no actual production deployment

@@ -1,0 +1,35 @@
+
+id = "database-devops-autopilot-training"
+name = "Database DevOps AutoPilot Training"
+databaseType = "SqlServer"
+
+[environments.development]
+url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-dev-001;encrypt=true;trustServerCertificate=false"
+user = "your_username"
+password = "your_password"
+displayName = "Development database"
+
+[environments.uat]
+url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-uat-001;encrypt=true;trustServerCertificate=false"
+user = "your_username"
+password = "your_password"
+displayName = "UAT (User Acceptance Testing) database"
+
+[flyway]
+locations = [ "filesystem:migrations" ]
+mixed = true
+outOfOrder = true
+validateMigrationNaming = true
+defaultSchema = "Customers"
+baselineOnMigrate = true
+baselineVersion = "001"
+errorOverrides = [ "S0001:0:I-" ]
+
+[flyway.sqlserver.clean]
+mode = "all"
+
+[flyway.sqlserver.clean.schemas]
+exclude = [ "ExampleSchema1", "ExampleSchema2" ]
+
+[flywayDesktop]
+developmentEnvironment = "development"
