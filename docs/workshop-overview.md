@@ -16,7 +16,7 @@ Intensive hands-on training for **Flyway AutoPilot** - intelligent database DevO
 Transform database deployments from manual processes to intelligent, automated workflows:
 
 - **AutoPilot Schema Detection**: Automatically capture database changes without manual scripting
-- **Azure SQL Database Integration**: Enterprise cloud database environments  
+- **Azure SQL Database Integration**: Enterprise cloud database environments
 - **Migration Script Generation**: Automated production-ready migration creation
 - **GitHub Actions CI/CD**: Complete automated deployment pipelines
 - **E-commerce Platform Evolution**: Real-world business scenarios and progressive development
@@ -30,7 +30,7 @@ Transform database deployments from manual processes to intelligent, automated w
 ### Complete Lab Path
 
 1. **[Environment Setup](../training/flyway-autopilot/labs/lab1-environment-setup/)** - Azure SQL Database and AutoPilot configuration
-2. **[Repository Configuration](../training/flyway-autopilot/labs/lab2-repository-configuration/)** - Flyway project setup and Git integration  
+2. **[Repository Configuration](../training/flyway-autopilot/labs/lab2-repository-configuration/)** - Flyway project setup and Git integration
 3. **[Database Provisioning](../training/flyway-autopilot/labs/lab3-database-provisioning/)** - E-commerce baseline deployment
 4. **[Schema Change Capture](../training/flyway-autopilot/labs/lab4-schema-change-capture/)** - AutoPilot change detection
 5. **[Migration Script Generation](../training/flyway-autopilot/labs/lab5-migration-script-generation/)** - Automated script creation
@@ -51,4 +51,4 @@ Transform database deployments from manual processes to intelligent, automated w
 
 ---
 
-*Progressive e-commerce platform examples demonstrate real-world database DevOps scenarios throughout the training.*
+_Progressive e-commerce platform examples demonstrate real-world database DevOps scenarios throughout the training._
