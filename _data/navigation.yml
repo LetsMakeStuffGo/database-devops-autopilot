@@ -16,20 +16,20 @@ training_sidebar:
         url: /docs/prerequisites/
       - title: "Workshop Overview"
         url: /docs/workshop-overview/
-  - title: "Flyway Labs"
+  - title: "Flyway AutoPilot Labs"
     children:
-      - title: "Lab 1: Getting Started"
-        url: /training/flyway-autopilot/labs/lab1-getting-started/
-      - title: "Lab 2: Pipelines & Automation"
-        url: /training/flyway-autopilot/labs/lab2-pipelines-and-automation/
-      - title: "Lab 3: Advanced Deployments"
-        url: /training/flyway-autopilot/labs/lab3-deployments/
-      - title: "Lab 4: Version Control"
-        url: /training/flyway-autopilot/labs/lab4-version-control/
-      - title: "Lab 5: Monitoring & Rollback"
-        url: /training/flyway-autopilot/labs/lab5-monitoring-and-rollback/
-      - title: "Lab 6: Best Practices"
-        url: /training/flyway-autopilot/labs/lab6-best-practices/
+      - title: "Lab 1: Environment Setup"
+        url: /training/flyway-autopilot/labs/lab1-environment-setup/
+      - title: "Lab 2: Repository Configuration"
+        url: /training/flyway-autopilot/labs/lab2-repository-configuration/
+      - title: "Lab 3: Database Provisioning"
+        url: /training/flyway-autopilot/labs/lab3-database-provisioning/
+      - title: "Lab 4: Schema Change Capture"
+        url: /training/flyway-autopilot/labs/lab4-schema-change-capture/
+      - title: "Lab 5: Migration Script Generation"
+        url: /training/flyway-autopilot/labs/lab5-migration-script-generation/
+      - title: "Lab 6: CI/CD Deployment"
+        url: /training/flyway-autopilot/labs/lab6-cicd-deployment/
   - title: "Resources"
     children:
       - title: "References"
@@ -38,15 +38,15 @@ training_sidebar:
         url: /docs/troubleshooting/
 
 training:
-  - title: "Getting Started"
-    url: /training/flyway-autopilot/labs/lab1-getting-started
-  - title: "Pipelines & Automation"
-    url: /training/flyway-autopilot/labs/lab2-pipelines-and-automation
-  - title: "Deployments"
-    url: /training/flyway-autopilot/labs/lab3-deployments
-  - title: "Version Control"
-    url: /training/flyway-autopilot/labs/lab4-version-control
-  - title: "Monitoring & Rollback"
-    url: /training/flyway-autopilot/labs/lab5-monitoring-and-rollback
-  - title: "Best Practices"
-    url: /training/flyway-autopilot/labs/lab6-best-practices
+  - title: "Environment Setup"
+    url: /training/flyway-autopilot/labs/lab1-environment-setup
+  - title: "Repository Configuration"
+    url: /training/flyway-autopilot/labs/lab2-repository-configuration
+  - title: "Database Provisioning"
+    url: /training/flyway-autopilot/labs/lab3-database-provisioning
+  - title: "Schema Change Capture"
+    url: /training/flyway-autopilot/labs/lab4-schema-change-capture
+  - title: "Migration Script Generation"
+    url: /training/flyway-autopilot/labs/lab5-migration-script-generation
+  - title: "CI/CD Deployment"
+    url: /training/flyway-autopilot/labs/lab6-cicd-deployment

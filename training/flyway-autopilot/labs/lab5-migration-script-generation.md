@@ -1,15 +1,15 @@
 ---
 layout: single
-title: "Lab 5: Generating Migration Scripts"
-description: "Learn to generate versioned migration scripts from your schema model changes for deployment across environments"
+title: "Lab 5: Migration Script Generation"
+description: "Automated migration script creation and validation procedures"
 toc: true
 toc_label: "Lab Steps"
 toc_icon: "tasks"
 prev_lab:
-  title: "Lab 4: Using Flyway AutoPilot - Capturing Schema Changes"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab4-schema-capture"
+  title: "Lab 4: Schema Change Capture"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab4-schema-change-capture"
 next_lab:
-  title: "Lab 6: Deploying Via CI/CD Platforms"
+  title: "Lab 6: CI/CD Deployment"
   url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab6-cicd-deployment"
 ---
 

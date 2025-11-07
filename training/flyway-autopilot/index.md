@@ -7,56 +7,56 @@ toc_label: "Training Contents"
 toc_icon: "graduation-cap"
 ---
 
-# Flyway Autopilot Training
+# Flyway AutoPilot Training
 
-Transform your database deployment process with automated, reliable, and scalable migration pipelines.
+Transform your database deployment process with intelligent, automated migration detection and generation using Azure SQL Database.
 
 ## What You'll Learn
 
-This hands-on training will teach you to implement enterprise-grade database DevOps practices using Flyway Autopilot.
+This hands-on training will teach you to implement enterprise-grade database DevOps practices using Flyway AutoPilot.
 
 ### Core Concepts
 
-- **Automated Migrations**: Set up seamless database schema updates
-- **Pipeline Integration**: Connect database deployments to your CI/CD workflows
-- **Version Control**: Track and manage database changes like application code
-- **Monitoring**: Implement comprehensive deployment monitoring
-- **Rollback Strategies**: Prepare for and execute safe rollback procedures
+- **AutoPilot Schema Detection**: Automatically capture database changes without manual scripting
+- **Azure SQL Database Integration**: Work with enterprise cloud database environments
+- **Migration Script Generation**: Generate production-ready migration scripts automatically
+- **GitHub Actions CI/CD**: Implement complete automated deployment pipelines
+- **E-commerce Platform Evolution**: Learn through realistic business scenarios
 
 ## Training Path
 
 <div class="lab-grid">
   <div class="lab-card">
-    <h3><a href="labs/lab1-getting-started">Lab 1: Getting Started</a></h3>
-    <p>Introduction to Flyway Autopilot and setting up your development environment</p>
+    <h3><a href="labs/lab1-environment-setup">Lab 1: Environment Setup</a></h3>
+    <p>Azure SQL Database and AutoPilot configuration for your development environment</p>
   </div>
   
   <div class="lab-card">
-    <h3><a href="labs/lab2-pipelines-and-automation">Lab 2: Pipelines & Automation</a></h3>
-    <p>Setting up CI/CD pipelines for automated database deployments</p>
+    <h3><a href="labs/lab2-repository-configuration">Lab 2: Repository Configuration</a></h3>
+    <p>Flyway project setup and Git integration for version control</p>
   </div>
   
   <div class="lab-card">
-    <h3><a href="labs/lab3-deployments">Lab 3: Deployments</a></h3>
-    <p>Advanced deployment strategies and handling complex migration scenarios</p>
+    <h3><a href="labs/lab3-database-provisioning">Lab 3: Database Provisioning</a></h3>
+    <p>E-commerce platform baseline deployment and database provisioning</p>
   </div>
   
   <div class="lab-card">
-    <h3><a href="labs/lab4-version-control">Lab 4: Version Control</a></h3>
-    <p>Advanced database version management and team collaboration strategies</p>
+    <h3><a href="labs/lab4-schema-change-capture">Lab 4: Schema Change Capture</a></h3>
+    <p>AutoPilot change detection and intelligent schema comparison</p>
   </div>
   
   <div class="lab-card">
-    <h3><a href="labs/lab5-monitoring-and-rollback">Lab 5: Monitoring & Rollback</a></h3>
-    <p>Implement comprehensive monitoring and establish robust rollback procedures</p>
+    <h3><a href="labs/lab5-migration-script-generation">Lab 5: Migration Script Generation</a></h3>
+    <p>Automated migration script creation and validation procedures</p>
   </div>
   
   <div class="lab-card">
-    <h3><a href="labs/lab6-best-practices">Lab 6: Best Practices</a></h3>
-    <p>Industry best practices and advanced techniques for enterprise database DevOps</p>
+    <h3><a href="labs/lab6-cicd-deployment">Lab 6: CI/CD Deployment</a></h3>
+    <p>GitHub Actions pipeline implementation for automated deployments</p>
   </div>
 </div>
 
 ## Getting Started
 
-Ready to begin? Start with [Lab 1: Getting Started](labs/lab1-getting-started/) to set up your development environment and explore the basics of Flyway Autopilot.
+Ready to begin? Start with [Lab 1: Environment Setup](labs/lab1-environment-setup/) to configure Azure SQL Database and explore the basics of Flyway AutoPilot.

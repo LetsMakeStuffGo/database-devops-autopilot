@@ -1,16 +1,16 @@
 ---
 layout: single
-title: "Lab 4: Using Flyway AutoPilot - Capturing Schema Changes"
-description: "Learn to capture schema changes, save them to your schema model, and manage database evolution with your e-commerce platform"
+title: "Lab 4: Schema Change Capture"
+description: "AutoPilot change detection and intelligent schema comparison"
 toc: true
 toc_label: "Lab Steps"
 toc_icon: "tasks"
 prev_lab:
-  title: "Lab 3: Provisioning Your Databases"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab3-provisioning-your-database"
+  title: "Lab 3: Database Provisioning"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab3-database-provisioning"
 next_lab:
-  title: "Lab 5: Generating Migration Scripts"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab5-generating-migrations"
+  title: "Lab 5: Migration Script Generation"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab5-migration-script-generation"
 ---
 
 ## Overview
@@ -404,7 +404,3 @@ You now understand the core AutoPilot workflow for capturing and managing schema
 - [Flyway AutoPilot Documentation](https://documentation.red-gate.com/flyway/flyway-concepts/flyway-autopilot)
 - [Schema Model Best Practices](https://documentation.red-gate.com/flyway/database-development-using-flyway/the-schema-model)
 - [Database Version Control Guide](https://www.red-gate.com/simple-talk/databases/database-administration/database-version-control-best-practices/)
-
-```
-
-```

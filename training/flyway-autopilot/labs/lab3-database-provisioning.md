@@ -1,16 +1,16 @@
 ---
 layout: single
-title: "Lab 3: Provisioning Your Databases"
-description: "Set up and provision your AutoPilot databases using SQL Server Management Studio and connect them to your Flyway Desktop project"
+title: "Lab 3: Database Provisioning"
+description: "E-commerce platform baseline deployment and database provisioning"
 toc: true
 toc_label: "Lab Steps"
 toc_icon: "tasks"
 prev_lab:
-  title: "Lab 2: Getting Your Repository Ready"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab2-pipelines-and-automation"
+  title: "Lab 2: Repository Configuration"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab2-repository-configuration"
 next_lab:
-  title: "Lab 4: Schema Capture and First Migration"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab4-schema-capture"
+  title: "Lab 4: Schema Change Capture"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab4-schema-change-capture"
 ---
 
 ## Overview

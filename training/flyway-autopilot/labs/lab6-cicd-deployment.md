@@ -1,13 +1,13 @@
 ---
 layout: single
-title: "Lab 6: Deploying Via CI/CD Platforms - GitHub Actions"
-description: "Set up automated database deployments using GitHub Actions to deploy your wishlist feature across environments"
+title: "Lab 6: CI/CD Deployment"
+description: "GitHub Actions pipeline implementation for automated deployments"
 toc: true
 toc_label: "Lab Steps"
 toc_icon: "tasks"
 prev_lab:
-  title: "Lab 5: Generating Migration Scripts"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab5-generating-migrations"
+  title: "Lab 5: Migration Script Generation"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab5-migration-script-generation"
 next_lab:
   title: "Course Summary"
   url: "/database-devops-autopilot/training/flyway-autopilot/course-summary"

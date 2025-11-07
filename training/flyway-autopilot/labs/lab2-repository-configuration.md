@@ -1,16 +1,16 @@
 ---
 layout: single
-title: "Lab 2: Getting Your Repository Ready"
-description: "Set up your repository and connect it to Flyway Desktop for AutoPilot functionality"
+title: "Lab 2: Repository Configuration"
+description: "Flyway project setup and Git integration for version control"
 toc: true
 toc_label: "Lab Steps"
 toc_icon: "tasks"
 prev_lab:
-  title: "Lab 1: Getting Started"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab1-getting-started"
+  title: "Lab 1: Environment Setup"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab1-environment-setup"
 next_lab:
-  title: "Lab 3: Deployments"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab3-provisioning-your-database"
+  title: "Lab 3: Database Provisioning"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab3-database-provisioning"
 ---
 
 ## Overview

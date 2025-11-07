@@ -1,13 +1,13 @@
 ---
 layout: single
-title: "Lab 1: Getting Started with Flyway AutoPilot"
-description: "Prerequisites and setup for Flyway AutoPilot"
+title: "Lab 1: Environment Setup"
+description: "Azure SQL Database and AutoPilot configuration"
 next_lab:
-  title: "Lab 2: Pipelines and Automation"
-  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab2-getting-repos-ready"
+  title: "Lab 2: Repository Configuration"
+  url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab2-repository-configuration"
 ---
 
-Welcome to Flyway AutoPilot! This lab covers the prerequisites and initial setup you need to get started with automated database deployments.
+Welcome to Flyway AutoPilot! This lab covers the Azure SQL Database setup and AutoPilot configuration you need to get started with automated database deployments.
 
 ## What is Flyway AutoPilot?
 

@@ -23,7 +23,6 @@ Transform database deployments from manual processes to intelligent, automated w
 
 ## Training Structure
 
-**Duration**: 4-6 hours (6 labs, 30-60 minutes each)  
 **Format**: Progressive hands-on exercises with e-commerce platform scenarios  
 **Prerequisites**: Basic SQL knowledge, Azure account, Git familiarity
 
@@ -48,7 +47,5 @@ Transform database deployments from manual processes to intelligent, automated w
 1. **Check Prerequisites**: Review [system requirements](../prerequisites/)
 2. **Start Training**: Begin with [Lab 1: Environment Setup](../training/flyway-autopilot/labs/lab1-environment-setup/)
 3. **Access Platform**: Complete training at [Flyway AutoPilot Training](../training/flyway-autopilot/)
-
----
 
 _Progressive e-commerce platform examples demonstrate real-world database DevOps scenarios throughout the training._
