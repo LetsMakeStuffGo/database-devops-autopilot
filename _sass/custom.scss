@@ -1,0 +1,116 @@
+/* Custom overrides for full-width layout */
+
+/* Override Minimal Mistakes theme width constraints */
+.page {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.page__content {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.archive {
+  max-width: 100% !important;
+}
+
+.archive__item {
+  max-width: 100% !important;
+}
+
+.sidebar {
+  max-width: 300px !important;
+}
+
+.page__inner-wrap {
+  max-width: 100% !important;
+}
+
+/* Override main container widths */
+.container {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.wrapper {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Ensure splash layout uses full width */
+.layout--splash .page {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.layout--splash .page__content {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* TOC-specific overrides for full width */
+.page__content .page__meta,
+.page__content .page__lead,
+.page__content .page__content {
+  max-width: 100% !important;
+}
+
+/* When TOC is present, ensure content still uses available space */
+.sidebar__right {
+  max-width: 300px !important;
+  min-width: 250px !important;
+}
+
+.sidebar__right .toc {
+  max-width: 100% !important;
+}
+
+/* Main content area when TOC sidebar is present */
+.page__content .page__content {
+  margin-right: 0 !important;
+  max-width: calc(100% - 320px) !important;
+}
+
+/* For TOC layouts, adjust the main content area */
+@media (min-width: 80em) {
+  .layout--single.has-sidebar .page__content {
+    max-width: calc(100% - 320px) !important;
+    margin-right: 0 !important;
+  }
+}
+
+@media (min-width: 64em) {
+  .layout--single.has-sidebar .page__content {
+    max-width: calc(100% - 320px) !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* Override any theme max-width constraints */
+@media (min-width: 80em) {
+  .page {
+    max-width: 100% !important;
+  }
+  
+  .page__content {
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 64em) {
+  .page {
+    max-width: 100% !important;
+  }
+  
+  .page__content {
+    max-width: 100% !important;
+  }
+}
+
+/* Lab specific full-width styles */
+.lab-content {
+  max-width: 100% !important;
+  margin: 0 auto;
+  padding: 20px;
+}

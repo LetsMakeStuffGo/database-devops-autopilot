@@ -1,6 +1,7 @@
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'air' }}"; // skin
 @import "minimal-mistakes"; // main partials
+@import "custom"; // custom full-width overrides
 
 // Simple, clean header fixes
 .masthead {
