@@ -99,9 +99,6 @@ defaults:
     values:
       layout: single
       author_profile: false
-      toc: true
-      toc_label: "Lab Contents"
-      toc_icon: "cog"
 
 # Collections
 collections:
