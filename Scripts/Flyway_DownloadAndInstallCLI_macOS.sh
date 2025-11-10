@@ -78,15 +78,86 @@ INSTALL_DIR="$HOME/flyway-$FLYWAY_VERSION" # Install directory in the user's hom
 # Download and install Flyway
 echo "Downloading and installing Flyway version $FLYWAY_VERSION for macOS..."
 
-# Try macOS specific download first, fallback to Linux version
-DOWNLOAD_URL="https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/$FLYWAY_VERSION/flyway-commandline-$FLYWAY_VERSION-macos-x64.tar.gz"
-
-# Check if macOS version exists, otherwise use Linux version
-if ! curl --output /dev/null --silent --head --fail "$DOWNLOAD_URL"; then
-  echo "macOS version not available, using Linux version..."
-  DOWNLOAD_URL="https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/$FLYWAY_VERSION/flyway-commandline-$FLYWAY_VERSION-linux-x64.tar.gz"
+# Check if Java is available on the system
+if ! command -v java >/dev/null 2>&1; then
+  echo "Warning: Java is not installed or not in PATH."
+  
+  # Check common Java installation paths on macOS
+  JAVA_PATHS=(
+    "/Library/Java/JavaVirtualMachines/*/Contents/Home/bin/java"
+    "/opt/homebrew/opt/openjdk@*/bin/java"
+    "/usr/local/opt/openjdk@*/bin/java"
+    "/System/Library/Java/JavaVirtualMachines/*/Contents/Home/bin/java"
+  )
+  
+  JAVA_FOUND=false
+  for java_path in "${JAVA_PATHS[@]}"; do
+    # Use glob expansion to find Java installations
+    for java_bin in $java_path; do
+      if [ -x "$java_bin" ]; then
+        export JAVA_HOME="$(dirname "$(dirname "$java_bin")")"
+        export PATH="$(dirname "$java_bin"):$PATH"
+        echo "Found Java at: $java_bin"
+        echo "Set JAVA_HOME to: $JAVA_HOME"
+        JAVA_FOUND=true
+        break 2
+      fi
+    done
+  done
+  
+  if [ "$JAVA_FOUND" = false ]; then
+    echo "Installing Java using available package manager..."
+    if command -v brew >/dev/null 2>&1; then
+      brew install openjdk@17
+      export JAVA_HOME="/opt/homebrew/opt/openjdk@17"
+      export PATH="$JAVA_HOME/bin:$PATH"
+    else
+      echo "Error: No Java found and Homebrew not available."
+      echo "Please install Java manually or ensure it's in your PATH."
+      echo "On GitHub Actions runners, Java should be pre-installed."
+      exit 1
+    fi
+  fi
 fi
 
+echo "Java version check:"
+java -version
+
+# For macOS, try different download strategies:
+# 1. Try macOS-specific version
+# 2. Try no-JRE version (uses system Java)
+# 3. Fallback to Linux version only if others fail
+
+DOWNLOAD_URLS=(
+  "https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/$FLYWAY_VERSION/flyway-commandline-$FLYWAY_VERSION-macos-x64.tar.gz"
+  "https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/$FLYWAY_VERSION/flyway-commandline-$FLYWAY_VERSION-linux-x64-no-jre.tar.gz"
+  "https://download.red-gate.com/maven/release/com/redgate/flyway/flyway-commandline/$FLYWAY_VERSION/flyway-commandline-$FLYWAY_VERSION-linux-x64.tar.gz"
+)
+
+DOWNLOAD_URL=""
+DOWNLOAD_TYPE=""
+
+for i in "${!DOWNLOAD_URLS[@]}"; do
+  url="${DOWNLOAD_URLS[$i]}"
+  echo "Checking availability of download option $((i+1))..."
+  if curl --output /dev/null --silent --head --fail "$url"; then
+    DOWNLOAD_URL="$url"
+    case $i in
+      0) DOWNLOAD_TYPE="macOS-specific" ;;
+      1) DOWNLOAD_TYPE="no-JRE (uses system Java)" ;;
+      2) DOWNLOAD_TYPE="Linux with JRE" ;;
+    esac
+    echo "Found available download: $DOWNLOAD_TYPE"
+    break
+  fi
+done
+
+if [ -z "$DOWNLOAD_URL" ]; then
+  echo "Error: No suitable Flyway download found for version $FLYWAY_VERSION"
+  exit 1
+fi
+
+echo "Downloading Flyway ($DOWNLOAD_TYPE)..."
 # Download and extract
 curl -L "$DOWNLOAD_URL" | tar -xzf -
 
@@ -102,6 +173,34 @@ if [ -d "flyway-$FLYWAY_VERSION" ]; then
 else
   echo "Error: Flyway directory not found after extraction."
   exit 1
+fi
+
+# If we downloaded Linux version with JRE, we need to handle the Java incompatibility
+if [ "$DOWNLOAD_TYPE" = "Linux with JRE" ]; then
+  echo "Downloaded Linux version with JRE. Checking Java compatibility..."
+  
+  # Test if the bundled Java works
+  if ! "$INSTALL_DIR/jre/bin/java" -version >/dev/null 2>&1; then
+    echo "Bundled Java is incompatible with macOS. Configuring to use system Java..."
+    
+    # Check if system Java is available
+    if command -v java >/dev/null 2>&1; then
+      # Modify the flyway script to use system Java instead of bundled JRE
+      if [ -f "$INSTALL_DIR/flyway" ]; then
+        # Backup original script
+        cp "$INSTALL_DIR/flyway" "$INSTALL_DIR/flyway.original"
+        
+        # Replace JRE path with system java
+        sed 's|JAVA_CMD="$INSTALLDIR/jre/bin/java"|JAVA_CMD="java"|g' "$INSTALL_DIR/flyway.original" > "$INSTALL_DIR/flyway"
+        chmod +x "$INSTALL_DIR/flyway"
+        
+        echo "Modified Flyway to use system Java instead of bundled JRE"
+      fi
+    else
+      echo "Error: System Java not found. Please install Java first."
+      exit 1
+    fi
+  fi
 fi
 
 # Make sure the flyway binary is executable
