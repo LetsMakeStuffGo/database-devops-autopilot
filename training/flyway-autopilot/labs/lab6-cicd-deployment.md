@@ -139,8 +139,6 @@ Value: [your-database-password] (Optional for Windows Auth)
 Secret Name: CUSTOM_PARAMS
 Value: -X (Optional - enables debug mode)
 
-Secret Name: FLYWAY_CLI_INSTALL
-Value: true (Recommended - auto-installs Flyway CLI)
 ```
 
 ### 2. Understanding Secret Usage
@@ -197,7 +195,7 @@ The workflows are pre-configured to:
 3. **Click "Run workflow"** button
 4. **Confirm the branch** and click "Run workflow"
 
-![Trigger Workflow](../../../assets/images/labs/lab6-cicd_5)
+![Trigger Workflow](../../../assets/images/labs/lab6-cicd_5.png)
 
 ### 2. Monitor the Workflow
 
@@ -205,22 +203,14 @@ The workflows are pre-configured to:
 2. **Watch for "Queued" status** (normal if runner is busy)
 3. **Verify runner is active** and available to execute
 
-![Workflow Queued](../../../assets/images/labs/lab6-workflow-queued.png)
+![Workflow Queued](../../../assets/images/labs/lab6-cicd_6.png)
 
 ### 3. View Deployment Progress
 
 1. **Click on "Deploy Build"** job to see detailed logs
 2. **Monitor Flyway commands** being executed:
-   ```
-   Flyway Enterprise 10.x.x
-   Authenticating with Redgate...
-   Reading configuration from flyway.toml
-   Connecting to database: db-autopilot-uat-001
-   Applying migration V005__Add_Customer_Wishlist_Feature.sql
-   Migration successful
-   ```
 
-![Workflow Running](../../../assets/images/labs/lab6-workflow-running.png)
+![Workflow Running](../../../assets/images/labs/lab6-cicd_7.png)
 
 ## Step 7: Post-Deployment Verification
 
@@ -237,7 +227,6 @@ After successful completion:
 ```
 ✅ Authentication successful
 ✅ Connected to db-autopilot-uat-001
-✅ Applied migration V005__Add_Customer_Wishlist_Feature.sql
 ✅ Database schema updated successfully
 ✅ No drift detected
 ```
