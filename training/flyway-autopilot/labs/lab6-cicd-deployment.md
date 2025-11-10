@@ -160,7 +160,6 @@ Value: true (Recommended - auto-installs Flyway CLI)
 2. **Select the YAML file** matching your self-hosted runner OS:
    - Windows: `GitHub-Flyway-CICD-Pipeline_Windows.yml`
    - Linux: `GitHub-Flyway-CICD-Pipeline_Linux.yml`
-   - macOS: `GitHub-Flyway-CICD-Pipeline_macOS.yml`
 
 ### 2. Review Workflow Configuration
 
@@ -198,7 +197,7 @@ The workflows are pre-configured to:
 3. **Click "Run workflow"** button
 4. **Confirm the branch** and click "Run workflow"
 
-![Trigger Workflow](../../../assets/images/labs/lab6-trigger-workflow.png)
+![Trigger Workflow](../../../assets/images/labs/lab6-cicd_5)
 
 ### 2. Monitor the Workflow
 

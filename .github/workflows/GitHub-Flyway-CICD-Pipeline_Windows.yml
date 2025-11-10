@@ -73,7 +73,9 @@ jobs:
       - uses: actions/checkout@v4
       # Optional - If Enabled, Flyway CLI will be validated and installed if not present
       - name: Flyway - CLI Automatic Validation and Install
-        run: powershell -ExecutionPolicy Bypass -File "${{ GITHUB.WORKSPACE }}/Scripts/Flyway_DownloadAndInstallCLI.ps1"
+        run: |
+          Set-Location "${{ GITHUB.WORKSPACE }}"
+          powershell -ExecutionPolicy Bypass -File ".\Scripts\Flyway_DownloadAndInstallCLI.ps1"
         if: env.FLYWAY_CLI_INSTALL_CHECK == 'true'
       # Step 1 - Flyway License Authentication #
       - name: Flyway Authentication
@@ -142,7 +144,9 @@ jobs:
         run: dir /s
       # Optional - If Enabled, Flyway CLI will be validated and installed if not present
       - name: Flyway - CLI Automatic Validation and Install
-        run: powershell -ExecutionPolicy Bypass -File "${{ GITHUB.WORKSPACE }}/Scripts/Flyway_DownloadAndInstallCLI.ps1"
+        run: |
+          Set-Location "${{ GITHUB.WORKSPACE }}"
+          powershell -ExecutionPolicy Bypass -File ".\Scripts\Flyway_DownloadAndInstallCLI.ps1"
         if: env.FLYWAY_CLI_INSTALL_CHECK == 'true'
       # Step 1 - Flyway License Authentication #
       - name: Flyway Authentication
