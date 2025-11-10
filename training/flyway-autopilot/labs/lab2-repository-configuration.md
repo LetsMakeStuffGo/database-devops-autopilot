@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: splash
 title: "Lab 2: Repository Configuration"
 description: "Flyway project setup and Git integration for version control"
 toc: true
@@ -236,4 +236,13 @@ This lab follows the structure from the [official SQL Server FastTrack repositor
 - [Official Repository Setup Guide](https://documentation.red-gate.com/flyway/getting-started-with-flyway/first-steps-flyway-autopilot-a-beginners-guide/flyway-autopilot-fasttrack/2-getting-your-repository-ready)
 - [SQL Server FastTrack Repository](https://github.com/red-gate/Flyway-AutoPilot-FastTrack) (reference)
 - [Flyway Desktop Documentation](https://documentation.red-gate.com/flyway/getting-started-with-flyway/installers)
+
 ```
+
+---
+
+## 🔗 Navigation
+
+**⬅️ [Previous: Lab 1 - Environment Setup](/database-devops-autopilot/training/flyway-autopilot/labs/lab1-environment-setup)** | **🏠 [Workshop Overview](/database-devops-autopilot/training/flyway-autopilot/labs/)** | **➡️ [Next: Lab 3 - Database Provisioning](/database-devops-autopilot/training/flyway-autopilot/labs/lab3-database-provisioning)**
+
+---

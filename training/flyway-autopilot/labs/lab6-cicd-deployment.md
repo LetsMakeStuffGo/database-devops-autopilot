@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: splash
 title: "Lab 6: CI/CD Deployment"
 description: "GitHub Actions pipeline implementation for automated deployments"
 toc: true
@@ -354,3 +354,22 @@ Now that you've mastered the fundamentals, continue your Flyway journey:
 - [Flyway CI/CD Best Practices](https://documentation.red-gate.com/flyway/deploying-database-changes-using-flyway)
 - [Personal Access Tokens Guide](https://documentation.red-gate.com/authentication/personal-access-tokens-pats)
 - [Redgate Portal License Management](https://portal.red-gate.com/licenses)
+
+---
+
+## 🔗 Navigation
+
+**⬅️ [Previous: Lab 5 - Migration Script Generation](/database-devops-autopilot/training/flyway-autopilot/labs/lab5-migration-script-generation)** | **🏠 [Workshop Overview](/database-devops-autopilot/training/flyway-autopilot/labs/)**
+
+---
+
+## 🎉 Congratulations!
+
+You've completed the Flyway AutoPilot workshop! You now have:
+
+- ✅ A complete database DevOps pipeline
+- ✅ Automated schema capture and migration generation
+- ✅ CI/CD deployment automation
+- ✅ Best practices for database version control
+
+**Continue your database DevOps journey with the Redgate community and documentation!**

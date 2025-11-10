@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: splash
 title: "Lab 5: Migration Script Generation"
 description: "Automated migration script creation and validation procedures"
 toc: true
@@ -316,3 +316,11 @@ You now understand how to generate production-ready migration scripts from schem
 - [AutoPilot Migration Generation Guide](https://documentation.red-gate.com/flyway/database-development-using-flyway/generating-migrations-with-flyway-desktop)
 - [Migration Script Best Practices](https://www.red-gate.com/simple-talk/databases/database-administration/flyway-best-practices/)
 - [Version Control for Database Teams](https://documentation.red-gate.com/flyway/database-development-using-flyway/version-control-for-database-teams)
+
+---
+
+## 🔗 Navigation
+
+**⬅️ [Previous: Lab 4 - Schema Change Capture](/database-devops-autopilot/training/flyway-autopilot/labs/lab4-schema-change-capture)** | **🏠 [Workshop Overview](/database-devops-autopilot/training/flyway-autopilot/labs/)** | **➡️ [Next: Lab 6 - CI/CD Deployment](/database-devops-autopilot/training/flyway-autopilot/labs/lab6-cicd-deployment)**
+
+---

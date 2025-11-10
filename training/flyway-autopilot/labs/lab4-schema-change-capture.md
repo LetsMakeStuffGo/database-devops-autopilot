@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: splash
 title: "Lab 4: Schema Change Capture"
 description: "AutoPilot change detection and intelligent schema comparison"
 toc: true
@@ -404,3 +404,11 @@ You now understand the core AutoPilot workflow for capturing and managing schema
 - [Flyway AutoPilot Documentation](https://documentation.red-gate.com/flyway/flyway-concepts/flyway-autopilot)
 - [Schema Model Best Practices](https://documentation.red-gate.com/flyway/database-development-using-flyway/the-schema-model)
 - [Database Version Control Guide](https://www.red-gate.com/simple-talk/databases/database-administration/database-version-control-best-practices/)
+
+---
+
+## 🔗 Navigation
+
+**⬅️ [Previous: Lab 3 - Database Provisioning](/database-devops-autopilot/training/flyway-autopilot/labs/lab3-database-provisioning)** | **🏠 [Workshop Overview](/database-devops-autopilot/training/flyway-autopilot/labs/)** | **➡️ [Next: Lab 5 - Migration Script Generation](/database-devops-autopilot/training/flyway-autopilot/labs/lab5-migration-script-generation)**
+
+---

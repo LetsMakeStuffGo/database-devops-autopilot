@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: splash
 title: "Lab 3: Database Provisioning"
 description: "E-commerce platform baseline deployment and database provisioning"
 toc: true
@@ -422,3 +422,11 @@ Excellent! You now have an **amazing e-commerce platform** running in your Azure
 - [Official Provisioning Guide](https://documentation.red-gate.com/flyway/getting-started-with-flyway/first-steps-flyway-autopilot-a-beginners-guide/flyway-autopilot-fasttrack/3-provisioning-your-databases)
 - [SQL Server LocalDB Documentation](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb)
 - [SSMS Documentation](https://docs.microsoft.com/en-us/sql/ssms/sql-server-management-studio-ssms)
+
+---
+
+## 🔗 Navigation
+
+**⬅️ [Previous: Lab 2 - Repository Configuration](/database-devops-autopilot/training/flyway-autopilot/labs/lab2-repository-configuration)** | **🏠 [Workshop Overview](/database-devops-autopilot/training/flyway-autopilot/labs/)** | **➡️ [Next: Lab 4 - Schema Change Capture](/database-devops-autopilot/training/flyway-autopilot/labs/lab4-schema-change-capture)**
+
+---

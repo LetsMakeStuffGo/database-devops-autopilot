@@ -1,7 +1,10 @@
 ---
-layout: single
+layout: splash
 title: "Lab 1: Environment Setup"
 description: "Azure SQL Database and AutoPilot configuration"
+toc: true
+toc_label: "Lab Steps"
+toc_icon: "tasks"
 next_lab:
   title: "Lab 2: Repository Configuration"
   url: "/database-devops-autopilot/training/flyway-autopilot/labs/lab2-repository-configuration"
@@ -155,3 +158,11 @@ Before proceeding to the next lab, ensure you have:
 **Git Version Issues**: Use `git --version` to check your version. Update if below 2.30.
 
 **Dashboard Not Loading**: Restart Flyway Desktop and ensure your trial license is properly activated.
+
+---
+
+## 🔗 Navigation
+
+**🏠 [Workshop Overview](/database-devops-autopilot/training/flyway-autopilot/labs/)** | **➡️ [Next: Lab 2 - Repository Configuration](/database-devops-autopilot/training/flyway-autopilot/labs/lab2-repository-configuration)**
+
+---
