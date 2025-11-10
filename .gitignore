@@ -18,6 +18,26 @@ ehthumbs.db
 Thumbs.db
 
 # Editor files
+*.swp
+*.swo
+*~
+
+# Flyway Security - Local Configuration Files
+flyway-local.toml
+flyway.local.toml
+*local.toml
+flyway.dev.toml
+flyway.prod.toml
+
+# Database backups and sensitive data
+*.sql.bak
+*.dump
+config/local/
+config/secrets/
+
+# Flyway logs
+flyway.log
+*.log
 .vscode/
 .idea/
 *.swp

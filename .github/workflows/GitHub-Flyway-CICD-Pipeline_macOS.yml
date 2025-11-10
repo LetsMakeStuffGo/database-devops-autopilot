@@ -39,7 +39,7 @@ env:
     # Documentation on all available Authentication methods can be found here: https://documentation.red-gate.com/fd/flyway-licensing-263061944.html
     FLYWAY_EMAIL: "${{ secrets.FLYWAY_EMAIL }}" # Enter the email address linked to the Redgate Account that created the PAT
     FLYWAY_TOKEN: "${{ secrets.FLYWAY_TOKEN }}" # Enter the PAT Value (This should be treated like a password and thus as a secure variable.
-    FLYWAY_AUTH_DISABLED: "false" # Temporarily disable auth for testing - REMOVE THIS for production use
+    # FLYWAY_AUTH_DISABLED: "false" # Temporarily disable auth for testing - REMOVE THIS for production use
 
     BASELINE_VERSION: "001" # This should match the version number of your baseline script
     FIRST_UNDO_SCRIPT: "002" # This should match the first undo version in your project
@@ -72,6 +72,12 @@ jobs:
             CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
             EXECUTE_BUILD: "true" # Turn to false to skip the build stage tasks
             publishArtifacts: "true" # Turn to false to skip the artifact upload
+
+            # Database connection secrets for flyway.toml
+            AZURE_SQL_SERVER: "${{ secrets.AZURE_SQL_SERVER }}"
+            AZURE_SQL_USER: "${{ secrets.AZURE_SQL_USER }}"
+            AZURE_SQL_PASSWORD: "${{ secrets.AZURE_SQL_PASSWORD }}"
+            FLYWAY_DEV_DATABASE: "${{ secrets.FLYWAY_DEV_DATABASE }}"
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - uses: actions/checkout@v4
@@ -130,6 +136,7 @@ jobs:
         runs-on: "macos-latest" # Using macOS GitHub-hosted runners
         if: ${{ true }} #Set this variable to false to temporarily disable the job
         needs: build
+        environment: "development" # For Secrets
         env:
             stage: "UAT"
             DATABASE_NAME: "db-autopilot-uat-001"
@@ -142,6 +149,12 @@ jobs:
             CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
             generateReport: "true" # Turn to false to skip the CHECK report stage tasks
             FLYWAY_CHECK_DRIFT_ON_MIGRATE: "true" # Turn to false to skip the Drift Report upload to Flyway Pipelines (If enabled)
+
+            # Database connection secrets for flyway.toml
+            AZURE_SQL_SERVER: "${{ secrets.AZURE_SQL_SERVER }}"
+            AZURE_SQL_USER: "${{ secrets.AZURE_SQL_USER }}"
+            AZURE_SQL_PASSWORD: "${{ secrets.AZURE_SQL_PASSWORD }}"
+            FLYWAY_UAT_DATABASE: "${{ secrets.FLYWAY_UAT_DATABASE }}"
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
