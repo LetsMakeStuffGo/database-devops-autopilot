@@ -12,7 +12,7 @@
 
 ### Database Technologies
 
-- **[PostgreSQL Documentation](https://www.postgresql.org/docs/)** - Official PostgreSQL documentation
+- **[PostgreSQL Documentation](https://www.postgresql.org/docs/)** - Official PostgreSQL documentation to check ons
 - **[MySQL Documentation](https://dev.mysql.com/doc/)** - Official MySQL documentation
 - **[SQL Server Documentation](https://docs.microsoft.com/en-us/sql/sql-server/)** - Microsoft SQL Server docs
 - **[Oracle Database Documentation](https://docs.oracle.com/en/database/)** - Oracle database resources
