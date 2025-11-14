@@ -148,7 +148,7 @@ jobs:
       REPORT_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}" # Optional - Change to a different secret if the connection details for the report database differs from the target
       REPORT_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}" # Optional - Change to a different secret if the connection details for the report database differs from the target
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
-      generateReport: "true" # Turn to false to skip the CHECK report stage tasks
+      generateReport: "false" # Turn to false to skip the CHECK report stage tasks
       FLYWAY_CHECK_DRIFT_ON_MIGRATE: "true" # Turn to false to skip the Drift Report upload to Flyway Pipelines (If enabled)
 
       # Database connection secrets for flyway.toml
@@ -185,6 +185,7 @@ jobs:
       - name: Create Check Reports
         if: ${{ env.generateReport == 'true' && success() }}
         run: |
+          mkdir -p reports
           flyway check -dryrun -changes -drift -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ github.workspace }}/flyway.toml" -locations="filesystem:${{ github.workspace }}/migrations" "-check.buildEnvironment=${{ env.REPORT_ENVIRONMENT }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" "-reportFilename=${{ github.workspace }}/reports/${{ env.DATABASE_NAME }}-Run-${{ github.run_id }}-${{ env.ENVIRONMENT }}-Check-Report.html" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
         continue-on-error: true
 
@@ -213,7 +214,7 @@ jobs:
     env:
       stage: "Production"
       DATABASE_NAME: "db-autopilot-prod-001"
-      ENVIRONMENT: "prod" # Refers to the environment in the Flyway Project TOML file.
+      ENVIRONMENT: "production" # Refers to the environment in the Flyway Project TOML file.
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
       REPORT_ENVIRONMENT: "uat" # Use UAT as comparison base
@@ -257,6 +258,7 @@ jobs:
       - name: Create Production Check Reports
         if: ${{ env.generateReport == 'true' && success() }}
         run: |
+          mkdir -p reports
           flyway check -dryrun -changes -drift -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ github.workspace }}/flyway.toml" -locations="filesystem:${{ github.workspace }}/migrations" "-check.buildEnvironment=${{ env.REPORT_ENVIRONMENT }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" "-reportFilename=${{ github.workspace }}/reports/${{ env.DATABASE_NAME }}-Run-${{ github.run_id }}-${{ env.ENVIRONMENT }}-Check-Report.html" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
         continue-on-error: true
 
