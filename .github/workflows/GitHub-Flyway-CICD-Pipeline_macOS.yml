@@ -17,24 +17,6 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    inputs:
-      deployment_target:
-        description: "Choose deployment target"
-        required: true
-        default: "all"
-        type: choice
-        options:
-          - "all"
-      skip_build:
-        description: "Skip build and use existing artifacts"
-        required: false
-        default: false
-        type: boolean
-      force_deploy:
-        description: "Force deployment (skip some safety checks)"
-        required: false
-        default: false
-        type: boolean
   workflow_call: # This enables the workflow to be called from other workflows
 env:
   # Enable this for additional debug logging
@@ -79,7 +61,6 @@ jobs:
     name: Deploy Development
     # The type of runner that the job will run on
     runs-on: "macos-latest" # Using macOS GitHub-hosted runners
-    if: ${{ !inputs.skip_build && (inputs.deployment_target == 'development' || inputs.deployment_target == 'all') }}
     environment: "development"
     env:
       stage: "Development"
@@ -154,7 +135,7 @@ jobs:
     name: Deploy UAT
     # The type of runner that the job will run on
     runs-on: "macos-latest" # Using macOS GitHub-hosted runners
-    if: ${{ inputs.deployment_target == 'uat' || inputs.deployment_target == 'all' }}
+    if: ${{ true }} #Set this variable to false to temporarily disable the job
     needs: build
     environment: "development" # For Secrets
     env:
@@ -178,13 +159,8 @@ jobs:
       FLYWAY_UAT_DATABASE: "${{ secrets.FLYWAY_UAT_DATABASE }}"
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checkout repository if skipping build (otherwise use artifacts)
-      - uses: actions/checkout@v4
-        if: ${{ inputs.skip_build }}
-
-      # Download build artifacts if not skipping build
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/download-artifact@v4
-        if: ${{ !inputs.skip_build }}
         with:
           name: flyway-build-artifact-${{ github.run_number }}
 
@@ -209,7 +185,6 @@ jobs:
       - name: Create Check Reports
         if: ${{ env.generateReport == 'true' && success() }}
         run: |
-          mkdir -p reports
           flyway check -dryrun -changes -drift -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ github.workspace }}/flyway.toml" -locations="filesystem:${{ github.workspace }}/migrations" "-check.buildEnvironment=${{ env.REPORT_ENVIRONMENT }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" "-reportFilename=${{ github.workspace }}/reports/${{ env.DATABASE_NAME }}-Run-${{ github.run_id }}-${{ env.ENVIRONMENT }}-Check-Report.html" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
         continue-on-error: true
 
@@ -231,13 +206,14 @@ jobs:
     name: Deploy Production
     # The type of runner that the job will run on
     runs-on: self-hosted # Using self-hosted runners for production control
-    if: ${{ inputs.deployment_target == 'production' || inputs.deployment_target == 'all' }}
+    if: ${{ true }} #Set this variable to false to temporarily disable the job
     needs: uat
-    environment: "development" # Required for accessing secrets/credentials
+    environment: "development" # For Secrets
+
     env:
       stage: "Production"
       DATABASE_NAME: "db-autopilot-prod-001"
-      ENVIRONMENT: "production" # Refers to the environment in the Flyway Project TOML file.
+      ENVIRONMENT: "prod" # Refers to the environment in the Flyway Project TOML file.
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
       REPORT_ENVIRONMENT: "uat" # Use UAT as comparison base
@@ -255,13 +231,8 @@ jobs:
       FLYWAY_PROD_DATABASE: "${{ secrets.FLYWAY_PROD_DATABASE }}"
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checkout repository if skipping build (otherwise use artifacts)
-      - uses: actions/checkout@v4
-        if: ${{ inputs.skip_build }}
-
-      # Download build artifacts if not skipping build
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/download-artifact@v4
-        if: ${{ !inputs.skip_build }}
         with:
           name: flyway-build-artifact-${{ github.run_number }}
 
@@ -282,23 +253,10 @@ jobs:
         run: |
           flyway auth -IAgreeToTheEula -email="${{ env.FLYWAY_EMAIL }}" -token="${{ env.FLYWAY_TOKEN }}"
 
-      # Step 1.5 - Environment Verification (for troubleshooting)
-      - name: Verify Environment Configuration
-        run: |
-          echo "🔍 Verifying Production Environment Configuration..."
-          echo "Environment: ${{ env.ENVIRONMENT }}"
-          echo "Database: ${{ env.DATABASE_NAME }}"
-          echo "Server: ${{ env.AZURE_SQL_SERVER }}"
-          echo "User: ${{ env.AZURE_SQL_USER }}"
-          echo "Password configured: ${{ env.AZURE_SQL_PASSWORD != '' }}"
-          echo "Prod DB configured: ${{ env.FLYWAY_PROD_DATABASE != '' }}"
-          echo ""
-
       # Step 2 - Create Check Report (Production vs UAT)
       - name: Create Production Check Reports
         if: ${{ env.generateReport == 'true' && success() }}
         run: |
-          mkdir -p reports
           flyway check -dryrun -changes -drift -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ github.workspace }}/flyway.toml" -locations="filesystem:${{ github.workspace }}/migrations" "-check.buildEnvironment=${{ env.REPORT_ENVIRONMENT }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" "-reportFilename=${{ github.workspace }}/reports/${{ env.DATABASE_NAME }}-Run-${{ github.run_id }}-${{ env.ENVIRONMENT }}-Check-Report.html" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
         continue-on-error: true
 
@@ -310,45 +268,7 @@ jobs:
           name: flyway-reports-production
           path: ${{ github.workspace }}/reports/${{ env.DATABASE_NAME }}-Run-${{ github.run_id }}-${{ env.ENVIRONMENT }}-Check-Report.html
 
-      # Step 4 - MANUAL APPROVAL STEP: Deploy to Production
-      - name: Manual Approval Required
-        if: ${{ !inputs.force_deploy }}
-        run: |
-          echo "=============================================="
-          echo "🚨 PRODUCTION DEPLOYMENT APPROVAL REQUIRED 🚨"
-          echo "=============================================="
-          echo ""
-          echo "Environment: ${{ env.ENVIRONMENT }}"
-          echo "Database: ${{ env.DATABASE_NAME }}"
-          echo "Run ID: ${{ github.run_id }}"
-          echo "Triggered by: ${{ github.actor }}"
-          echo ""
-          echo "⚠️  Check the reports artifact for migration details before proceeding."
-          echo ""
-          echo "🔥 WARNING: This will deploy database changes to PRODUCTION!"
-          echo ""
-          echo "To proceed with deployment, you must type exactly: YES"
-          echo "Any other input will cancel the deployment."
-          echo ""
-          # Use a more robust input method for terminal environments
-          while true; do
-              printf "Do you approve PRODUCTION deployment? (YES/no): "
-              read response
-              case "$response" in
-                  YES)
-                      echo "✅ Production deployment approved!"
-                      break
-                      ;;
-                  no|n|N|NO)
-                      echo "❌ Production deployment cancelled by user."
-                      exit 1
-                      ;;
-                  *)
-                      echo "Please type exactly 'YES' to approve or 'no' to cancel"
-                      ;;
-              esac
-          done
-
+      # Step 4 - Deploy pending migrations to Production database (REQUIRES MANUAL APPROVAL)
       - name: Migrate Production DB
         if: success()
         run: |
