@@ -27,10 +27,24 @@ Now that you have successfully captured your wishlist feature changes in the sch
 
 ## Prerequisites
 
-- Completed Lab 4 (wishlist feature captured in schema model)
+- Completed Lab 4 (wishlist feature captured in schema model and shadow database validated)
 - Flyway Desktop connected to your development database
 - Wishlist feature changes saved to schema model and committed to version control
-- Access to shadow database for validation (automatically configured)
+- Understanding of shadow database concept from Lab 4
+- Access to all 4 environments (Development, Shadow, UAT, Production)
+
+## Shadow Database in Migration Generation
+
+Building on Lab 4's introduction to shadow databases, in this lab you'll see how the **Shadow Database** is used for migration script generation:
+
+### Migration Generation Process:
+
+1. **AutoPilot rebuilds shadow database** with all existing migration scripts
+2. **Compares development vs shadow** to detect new changes (your wishlist feature)
+3. **Generates migration scripts** to bring shadow/UAT/production up to development level
+4. **Validates generated scripts** against shadow database before deployment
+
+This ensures your migration scripts will work correctly when deployed to UAT and production environments.
 
 ## Step 1: Generate Migration Scripts
 
@@ -234,9 +248,10 @@ Your migration script is now ready for deployment to:
 
 **Target Environments:**
 
+- ✅ **Shadow Database** (`db-autopilot-shadow-001`) - For migration validation and testing
 - ✅ **UAT Database** (`db-autopilot-uat-001`) - For user acceptance testing
-- ✅ **Production Database** - For live deployment
-- ✅ **CI/CD Pipelines** - For automated deployment processes
+- ✅ **Production Database** (`db-autopilot-prod-001`) - For live deployment
+- ✅ **CI/CD Pipelines** - For automated deployment processes across all environments
 
 ### 3. What Happens During Deployment
 

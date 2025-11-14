@@ -19,7 +19,7 @@ In this lab, you'll provision the actual SQL Server databases that your Flyway A
 
 ## Learning Objectives
 
-- Use SQL Server Management Studio or preferßred IDE to provision databases
+- Use SQL Server Management Studio or preferred IDE to provision databases
 - Execute the database setup script
 - Connect provisioned databases to Flyway Desktop
 - Verify your AutoPilot environment is ready
@@ -68,11 +68,11 @@ You can use either of these tools to connect to your Azure SQL Database:
 
 ## Step 2: Connect to Azure SQL Database
 
-Use SSMS or Preferred IDE
+Choose your preferred database management tool for this training.
 
 ### VS Code with SQL Server Extension
 
-- **Best for**: Developers already using VS Code
+- **Best for**: Developers already using VS Code or working in GitHub Codespaces
 - **Extension**: Install "SQL Server (mssql)" extension
 
 ## Step 3: Connect to Your SQL Server
@@ -133,30 +133,54 @@ Now we'll use the database setup script that's already in our repository:
 
 4. **Review the script** - it will:
 
-   - Check if databases exist
-   - Create `db-autopilot-dev-001` database
-   - Create `db-autopilot-uat-001` database
-   - Set up all required schemas in both databases:
+   - Check if databases exist and clean them if needed
+   - Create `db-autopilot-dev-001` database (Development)
+   - Create `db-autopilot-shadow-001` database (Shadow/Validation)
+   - Create `db-autopilot-uat-001` database (User Acceptance Testing)
+   - Create `db-autopilot-prod-001` database (Production)
+   - Set up all required schemas in all databases:
      - **Customers** (default schema)
      - **Logistics**
      - **Operation**
      - **Sales**
 
-5. **Execute the script**:
+5. **Execute the database creation script**:
+
+   **Step 1: Create the databases (connect to master database)**
 
    - **SSMS**: Press **F5** or click **Execute**
    - **Azure Data Studio**: Click **Run** or press **F5**
-   - **VS Code**: Use Command Palette → **MS SQL: Execute Query** by chosing the `db-autopilot-dev-001` before run the command as it could not use the 'USE' query and do the same with `db-autopilot-uat-001`
-   - Watch for success messages in the output
+   - **VS Code**: Use Command Palette → **MS SQL: Execute Query**
+
+   **Step 2: Schema Setup (Optional - Baseline Migration Will Also Create Schemas)**
+
+   ⚠️ **Important Note**: The baseline migration `B001__baseline.sql` already creates all required schemas. However, if you want to verify schema creation before running Flyway migrations, you can optionally run the schema script.
+
+   **Optional Schema Pre-Setup:**
+
+   Since Azure SQL Database doesn't support `USE` statements, you must connect to each database individually to run the schema creation script:
+
+   **For each database (dev-001, shadow-001, uat-001, prod-001):**
+
+   1. **Connect to the specific database** (not master)
+   2. **Run the schema script**: `Scripts/SetupSchemas.sql`
+   3. **Verify success** by checking the output messages
+
+   **Alternative**: Use VS Code with SQL Server extension:
+
+   - Create separate connections for each database
+   - Run `SetupSchemas.sql` on each connection individually
+
+   **🎯 Recommended Approach**: Skip this step and let Flyway migrations create the schemas automatically when you run `flyway migrate` in the next step.
 
    ![Success!](../../../assets/images/labs/lab3-query-success.png)
 
 ### 2. Update Flyway Configuration for Your Azure SQL Database
 
-You need to update the `flyway.toml` file with your actual Azure SQL Database connection details:
+Update the `flyway.toml` file with your actual Azure SQL Database connection details:
 
 1. **Open `flyway.toml`** in your repository
-2. **Replace the placeholder values** with your actual connection details:
+2. **Update the connection strings** with your actual Azure SQL Database details:
 
 ```toml
 [environments.development]
@@ -165,11 +189,24 @@ user = "your_username"
 password = "your_password"
 displayName = "Development database"
 
+[environments.shadow]
+url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-shadow-001;encrypt=true;trustServerCertificate=false"
+user = "your_username"
+password = "your_password"
+displayName = "Shadow database (validation)"
+provisioner = "clean"
+
 [environments.uat]
 url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-uat-001;encrypt=true;trustServerCertificate=false"
 user = "your_username"
 password = "your_password"
 displayName = "UAT (User Acceptance Testing) database"
+
+[environments.production]
+url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-prod-001;encrypt=true;trustServerCertificate=false"
+user = "your_username"
+password = "your_password"
+displayName = "Production database"
 ```
 
 **Replace these values:**
@@ -191,21 +228,34 @@ displayName = "Development database"
 **Important Security Note:**  
 ⚠️ For training purposes, we're putting credentials directly in the file. In production environments, you should use environment variables or Azure Key Vault for credential management.
 
-### 3. Verify Database CreationAfter executing the script, you should see:
+### 3. Verify Database Creation
+
+After executing the script, you should see:
 
 ```
 db-autopilot-dev-001 Database Created
+db-autopilot-shadow-001 Database Created
 db-autopilot-uat-001 Database Created
-Database setup completed successfully - 2 databases ready for AutoPilot training
+db-autopilot-prod-001 Database Created
+Database setup completed successfully - 4 databases ready for AutoPilot training:
+  - db-autopilot-dev-001 (Development)
+  - db-autopilot-shadow-001 (Shadow/Validation)
+  - db-autopilot-uat-001 (User Acceptance Testing)
+  - db-autopilot-prod-001 (Production)
+
+Environment Flow: DEV ↔ SHADOW → UAT → PRODUCTION
+Shadow database is used for schema drift detection and migration validation.
 ```
 
 **Verify in Object Explorer/Database List**:
 
 1. Refresh the database list in your SQL tool
-2. You should see:
+2. You should see all four databases:
 
-   - `db-autopilot-dev-001`
-   - `db-autopilot-uat-001`
+   - `db-autopilot-dev-001` (Development)
+   - `db-autopilot-shadow-001` (Shadow)
+   - `db-autopilot-uat-001` (UAT)
+   - `db-autopilot-prod-001` (Production)
 
 3. Expand each database → **Security** → **Schemas** (or equivalent)
 4. Verify all schemas exist:
@@ -228,7 +278,11 @@ Database setup completed successfully - 2 databases ready for AutoPilot training
 
 ### 2. Check Database Connections
 
-- In Flyway Desktop, you should see **two environments** by clicking on the Environments tab
+- In Flyway Desktop, you should see **four environments** by clicking on the Environments tab:
+  - **Development** (db-autopilot-dev-001)
+  - **Shadow** (db-autopilot-shadow-001)
+  - **UAT** (db-autopilot-uat-001)
+  - **Production** (db-autopilot-prod-001)
 
 ### 3. Verify Schema Discovery
 
@@ -240,61 +294,64 @@ Database setup completed successfully - 2 databases ready for AutoPilot training
    - Operation
    - Sales
 
-3. Each schema should be empty (no tables yet) - this is expected!
+3. **If you ran the optional schema setup**, schemas will be visible immediately
+4. **If you skipped schema setup**, schemas will appear after running the baseline migration in the next step
 
-![Desktop Now](../../../assets/images/labs/lab3-Desktop-looklike.png)
+![Desktop Environment View](../../../assets/images/labs/lab3-Desktop-looklike.png)
 
-## Step 6: Run Your Exciting Migrations! 🚀
+## Step 6: Execute Baseline Migrations
 
-### 1. Execute Baseline Migration (Create the E-Commerce Platform!)
+### 1. Deploy the E-Commerce Platform
 
-Now that databases are connected, let's build our amazing e-commerce platform:
+Now that databases are connected, deploy the baseline e-commerce platform:
 
-1. In Flyway Desktop, select the **Migration Scripts** on the left panel
-2. You should see our exciting migrations:
-   ![Look like this!](../../../assets/images/labs/lab3-Migration-script.png)
+1. In Flyway Desktop, select the **Migration Scripts** panel on the left
+2. Review the available migration scripts:
+   ![Migration Scripts Panel](../../../assets/images/labs/lab3-Migration-script.png)
 
-   - `B001__baseline.sql` 🎯 **E-Commerce Platform Foundation** (customers, products, orders, sample data!)
-   - `V002__Welcome.sql` 🎉 **Welcome Message** (introduces the platform)
-   - `V003__Add_Customer_Loyalty.sql` 🌟 **Customer Loyalty Program** (points and levels!)
-   - `V004__Enhanced_Product_Catalog.sql` 🛒 **Product Reviews System** (ratings and inventory tracking)
+   - `B001__baseline.sql` - **E-Commerce Platform Foundation** (schemas, customers, products, orders, sample data)
+   - `V002__Welcome.sql` - **Welcome Message** (introduces the platform)
+   - `V003__Add_Customer_Loyalty.sql` - **Customer Loyalty Program** (points and levels)
+   - `V004__Enhanced_Product_Catalog.sql` - **Product Reviews System** (ratings and inventory tracking)
 
-3. Click on **Manage target Database** to select `db-autopilot-dev-001`
-4. **Run the migrations**:
+   ℹ️ **Note**: The baseline migration `B001__baseline.sql` creates all required schemas (Customers, Logistics, Operation, Sales), so the manual schema setup in Step 5.2 was optional.
+
+3. Select **Development Database** as your target environment
+4. **Execute the migrations**:
    - Click **Run Migrate** button in Flyway Desktop
-   - Watch the magic happen as your e-commerce platform is built!
+   - Monitor the migration execution progress
 
-### 2. What Just Happened?
+### 2. Migration Results
 
-After running the migrations, your database now contains:
+After successful migration execution, your database contains:
 
-🛍️ **Complete E-Commerce Platform:**
+**E-Commerce Platform Components:**
 
-- **Sales.Customers** - International customers from Germany, Mexico, UK, Sweden!
-- **Operation.Products** - iPhone 15 Pro, PlayStation 5, MacBook Air, Nintendo Switch OLED!
-- **Operation.Categories** - Electronics, Gaming, Books, Sports, Home & Garden
-- **Sales.Orders** - Real orders with shipping costs and dates
-- **Sales.CustomerLoyalty** - Points system with Bronze/Silver/Gold/Platinum levels!
-- **Operation.ProductReviews** - 5-star rating system with customer reviews!
+- **Sales.Customers** - International customer base from Germany, Mexico, UK, and Sweden
+- **Operation.Products** - Product catalog including iPhone 15 Pro, PlayStation 5, MacBook Air, Nintendo Switch OLED
+- **Operation.Categories** - Five product categories: Electronics, Gaming, Books, Sports, Home & Garden
+- **Sales.Orders** - Sample orders with shipping costs and delivery dates
+- **Sales.CustomerLoyalty** - Multi-tier loyalty system with Bronze/Silver/Gold/Platinum levels
+- **Operation.ProductReviews** - Customer review system with five-star ratings
 
-📊 **Business Intelligence Views:**
+**Business Intelligence Components:**
 
-- Customer order summaries with VIP status
+- Customer order summaries with VIP status indicators
 - Product rating summaries with star displays
-- Inventory status tracking
+- Inventory status tracking and alerts
 
-🔧 **Useful Procedures:**
+**Stored Procedures:**
 
 - Customer feedback recording with emoji responses
-- Inventory management
-- Loyalty point calculations
+- Inventory management procedures
+- Loyalty point calculation workflows
 
-### 3. Verify Your Amazing Platform
+### 3. Verify Platform Deployment
 
-1. **In Flyway Desktop:** Check migration history shows all versions completed ✅
-2. **In your SQL tool (SSMS/VS Code):**
-   - Refresh your `db-autopilot-dev-001` database
-   - Explore the tables and see the exciting sample data!
+1. **In Flyway Desktop:** Confirm migration history shows all versions completed successfully
+2. **In your SQL management tool (SSMS/VS Code):**
+   - Refresh your `db-autopilot-dev-001` database and check the `flyway_schema_history`
+   - Explore the tables and review the sample data
    - Try this query to see your international customers:
 
 ```sql
@@ -321,42 +378,55 @@ JOIN Sales.CustomerLoyalty l ON c.CustomerID = l.CustomerID
 ORDER BY l.TotalPoints DESC
 ```
 
-## Verification Checklist ✅
+## Verification Checklist
 
-Confirm your awesome e-commerce platform is ready:
+Complete the following verification steps to confirm successful setup:
 
-### Database Verification
+### Database Infrastructure Verification
 
 - [ ] Can connect to your Azure SQL Database server
-- [ ] Both databases exist: `db-autopilot-dev-001` and `db-autopilot-uat-001`
-- [ ] All four schemas exist in both databases (Customers, Logistics, Operation, Sales)
+- [ ] All four databases exist:
+  - `db-autopilot-dev-001` (Development)
+  - `db-autopilot-shadow-001` (Shadow)
+  - `db-autopilot-uat-001` (UAT)
+  - `db-autopilot-prod-001` (Production)
+- [ ] All four schemas exist in all databases (Customers, Logistics, Operation, Sales)
 - [ ] Updated flyway.toml with correct connection strings for your environment
 
-### E-Commerce Platform Verification 🛍️
+### E-Commerce Platform Verification
 
 - [ ] **Sales.Customers** table contains international customers (ALFKI, ANATR, ANTON, etc.)
-- [ ] **Operation.Products** table has exciting products (iPhone 15 Pro, PlayStation 5, etc.)
-- [ ] **Operation.Categories** table has 5 categories (Electronics, Gaming, Books, Sports, Home & Garden)
+- [ ] **Operation.Products** table includes products (iPhone 15 Pro, PlayStation 5, etc.)
+- [ ] **Operation.Categories** table contains 5 categories (Electronics, Gaming, Books, Sports, Home & Garden)
 - [ ] **Sales.Orders** table contains sample orders with shipping costs
 - [ ] **Sales.CustomerLoyalty** table shows loyalty points and levels (Bronze/Silver/Gold/Platinum)
-- [ ] **Operation.ProductReviews** table contains 5-star customer reviews
+- [ ] **Operation.ProductReviews** table contains customer reviews with ratings
 
 ### Flyway Desktop Verification
 
-- [ ] Flyway Desktop shows green connection status for both environments
+- [ ] Flyway Desktop shows green connection status for all four environments
+- [ ] Can see all 4 environments in the Environments tab:
+  - Development (db-autopilot-dev-001)
+  - Shadow (db-autopilot-shadow-001)
+  - UAT (db-autopilot-uat-001)
+  - Production (db-autopilot-prod-001)
 - [ ] Migration history shows all 4 migrations completed successfully:
-  - B001 (Baseline E-Commerce Platform) ✅
-  - V002 (Welcome Message) ✅
-  - V003 (Customer Loyalty Program) ✅
-  - V004 (Product Reviews System) ✅
+  - B001 (Baseline E-Commerce Platform) ✓
+  - V002 (Welcome Message) ✓
+  - V003 (Customer Loyalty Program) ✓
+  - V004 (Product Reviews System) ✓
 - [ ] Schema model is automatically discovered and populated
-- [ ] Can see all schemas and tables in the Schema Model panel
+- [ ] Can see all schemas populated with business tables:
+  - Customers schema (created by baseline migration)
+  - Logistics schema (created by baseline migration)
+  - Operation schema (created by baseline migration)
+  - Sales schema (with core tables like Customers, Orders, etc.)
 
-### Sample Data Verification 🎯
+### Sample Data Verification
 
-Test these queries in your SQL tool to verify the exciting content:
+Execute these queries in your SQL management tool to verify the platform data:
 
-**International Customers:**
+**International Customer Base:**
 
 ```sql
 SELECT CustomerID, CompanyName, City, Country
@@ -385,37 +455,15 @@ ORDER BY l.TotalPoints DESC
 -- Should show Bronze/Silver/Gold/Platinum levels
 ```
 
-## Next Steps 🎉
+**Next Steps:**
+In Lab 4, you will learn to:
 
-Excellent! You now have an **amazing e-commerce platform** running in your Azure SQL Database:
+- Explore the deployed e-commerce platform schema using Flyway Desktop
+- Understand the four-environment migration deployment pipeline
+- Create schema changes and generate new versioned migrations
+- Deploy changes from development to UAT environment using AutoPilot
 
-✅ **Connected to Azure SQL Database** using VS Code or SSMS  
-✅ **Provisioned databases** ready for AutoPilot  
-✅ **Updated Flyway configuration** with proper Azure SQL Database connection strings  
-✅ **Complete e-commerce platform deployed** with customers, products, orders, and loyalty program!  
-✅ **All 4 exciting migrations executed successfully** (B001, V002, V003, V004)  
-✅ **Sample data loaded** - international customers, iPhone 15 Pro, PlayStation 5, and more!  
-✅ **Business intelligence views** for customer analytics and product ratings  
-✅ **Customer loyalty program** with Bronze/Silver/Gold/Platinum levels  
-✅ **Product review system** with 5-star ratings
-
-**Your students now have a REAL e-commerce platform to work with!** 🛍️
-
-**In Lab 4**, you'll learn how to:
-
-- Explore your deployed e-commerce platform schema in Flyway Desktop
-- Understand how the 4-migration deployment pipeline works
-- Make schema changes and create new versioned migrations
-- Deploy changes from development to UAT environment
-- Use AutoPilot to track and manage database evolution
-- Add new features like shopping carts, payment tracking, or inventory alerts
-
-**What makes this training special:**
-
-- Students work with **real, engaging sample data** (not boring empty tables!)
-- **Progressive feature development** - each migration adds business value
-- **Modern e-commerce scenarios** students can relate to and extend
-- **Proper DevOps patterns** with baseline, versioned migrations, and rollback capabilities
+This training provides a comprehensive foundation in database DevOps practices using real-world, engaging scenarios that students can understand and extend.
 
 ## Additional Resources
 

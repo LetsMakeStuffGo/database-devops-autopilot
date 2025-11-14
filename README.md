@@ -57,6 +57,34 @@ Hands-on training for **Flyway AutoPilot** - intelligent database DevOps with au
 5. **[Migration Script Generation](training/flyway-autopilot/labs/lab5-migration-script-generation/)** - Automated script creation
 6. **[CI/CD Deployment](training/flyway-autopilot/labs/lab6-cicd-deployment/)** - GitHub Actions pipeline
 
+## Database Environment Strategy
+
+This training implements a **4-environment database DevOps pipeline** following Flyway enterprise best practices:
+
+### Environment Architecture
+
+```
+DEV ↔ SHADOW → UAT → PRODUCTION
+```
+
+**Environment Descriptions:**
+
+- 🔧 **Development** (`db-autopilot-dev-001`) - Primary development database where schema changes are made
+- 👥 **Shadow** (`db-autopilot-shadow-001`) - Clean validation database for schema drift detection and migration testing
+- 🧪 **UAT** (`db-autopilot-uat-001`) - User Acceptance Testing environment for stakeholder validation
+- 🚀 **Production** (`db-autopilot-prod-001`) - Live production database with approval gates and rollback capabilities
+
+### Shadow Database Benefits
+
+The **Shadow Database** is a key differentiator in professional database DevOps:
+
+- **Schema Drift Detection** - Identifies changes made directly in development that aren't scripted
+- **Migration Validation** - Tests migration scripts against a clean database state
+- **Source of Truth** - Represents the exact state that results from running all migration scripts
+- **CI/CD Safety** - Validates deployments before they reach UAT or Production
+
+This architecture ensures **zero-downtime deployments** and **consistent schema management** across all environments.
+
 ## What You'll Learn
 
 - AutoPilot schema change detection and automated migration generation

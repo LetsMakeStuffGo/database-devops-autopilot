@@ -2,7 +2,6 @@ SET QUOTED_IDENTIFIER ON
 GO
 SET ANSI_NULLS ON
 GO
-
 -- Create a view for wishlist analytics
 CREATE VIEW [Sales].[CustomerWishlistAnalytics]
 AS

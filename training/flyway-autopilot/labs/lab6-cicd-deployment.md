@@ -125,30 +125,65 @@ Value: [your-personal-access-token-from-step-1]
 
 ### 1. Add Database Connection Secrets
 
-For secure database connections, add these optional repository secrets:
+For secure Azure SQL Database connections, add these **required** repository secrets:
 
-**Database Connection Secrets:**
+**Azure SQL Database Connection Secrets:**
 
 ```
-Secret Name: TARGET_DATABASE_USERNAME
-Value: [your-database-username] (Optional for Windows Auth)
+Secret Name: AZURE_SQL_SERVER
+Value: [your-azure-sql-server-name] (without .database.windows.net)
 
-Secret Name: TARGET_DATABASE_PASSWORD
-Value: [your-database-password] (Optional for Windows Auth)
+Secret Name: AZURE_SQL_USER
+Value: [your-azure-sql-username]
+
+Secret Name: AZURE_SQL_PASSWORD
+Value: [your-azure-sql-password]
+
+Secret Name: FLYWAY_DEV_DATABASE
+Value: db-autopilot-dev-001
+
+Secret Name: FLYWAY_SHADOW_DATABASE
+Value: db-autopilot-shadow-001
+
+Secret Name: FLYWAY_UAT_DATABASE
+Value: db-autopilot-uat-001
+
+Secret Name: FLYWAY_PROD_DATABASE
+Value: db-autopilot-prod-001
 
 Secret Name: CUSTOM_PARAMS
 Value: -X (Optional - enables debug mode)
-
 ```
 
 ### 2. Understanding Secret Usage
 
 **Secret Descriptions:**
 
-- **TARGET_DATABASE_USERNAME/PASSWORD**: For SQL authentication (optional with Windows Auth)
+- **AZURE_SQL_SERVER**: Your Azure SQL Server hostname (e.g., `sqlbits` for `sqlbits.database.windows.net`)
+- **AZURE_SQL_USER/PASSWORD**: Azure SQL authentication credentials
+- **FLYWAY\_\*\_DATABASE**: Database names for each environment (DEV, Shadow, UAT, Production)
 - **CUSTOM_PARAMS**: Additional Flyway parameters (e.g., `-X` for debug mode)
 - **FLYWAY_CLI_INSTALL**: Set to `false` Set to true to enable a Flyway CLI validation on the runner, which will validate Flyway is installed and if not will download and install to the desired version
 - **FLYWAY_AUTH_DISABLED**: Set to `false` This is an optional variable that will disable the Flyway Authentication step if set to true. This is valuable for scenarios where offline permit activation is utilized, which results in the Auth variable then becoming unnecessary.
+
+### 3. Environment Flow in CI/CD
+
+Your pipeline will deploy through these environments:
+
+```
+Development (dev) ← Source Control
+         ↓
+Shadow Database (validation) ← Clean deployment test
+         ↓
+UAT (uat) ← User Acceptance Testing
+         ↓
+Production (prod) ← Manual approval required
+```
+
+- **Development**: Where developers make changes
+- **Shadow**: Clean database for validation testing
+- **UAT**: User acceptance testing environment
+- **Production**: Live production database (with approval gates)
 
 ## Step 5: Editing the Workflow Files
 

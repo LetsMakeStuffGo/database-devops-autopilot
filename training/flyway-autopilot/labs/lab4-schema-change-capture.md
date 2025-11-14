@@ -29,11 +29,48 @@ Now that you have your amazing e-commerce platform deployed with customers, prod
 
 - Completed Lab 3 (your e-commerce platform is deployed and running)
 - Flyway Desktop connected to your development database
+- Understanding of the 4-environment architecture (Development, Shadow, UAT, Production)
 - Access to your SQL tool (SSMS/VS Code) for making changes
 
-## Step 1: Refresh Flyway Desktop and Verify Current State
+## Understanding Your 4-Environment Architecture
 
-### 1. Connect to Your E-Commerce Platform
+Before we start capturing schema changes, let's review the **4-environment setup** you configured in Lab 3:
+
+### **Environment Roles:**
+
+1. **Development** (`db-autopilot-dev-001`): Active development and feature testing
+2. **Shadow** (`db-autopilot-shadow-001`): Clean validation database for migration testing
+3. **UAT** (`db-autopilot-uat-001`): User acceptance testing environment
+4. **Production** (`db-autopilot-prod-001`): Live production environment
+
+### **Shadow Database Purpose:**
+
+The **Shadow Database** is key to AutoPilot's change detection:
+
+- **Clean Slate**: Rebuilt frequently to ensure pristine migration state
+- **Change Validation**: Compares against development to detect uncommitted changes
+- **Migration Testing**: Validates that migration scripts work correctly
+- **Drift Detection**: Ensures development changes are properly captured
+
+In this lab, you'll make changes to development and see how AutoPilot uses the shadow database to detect and validate those changes.
+
+## Step 1: Prepare for Schema Change Capture
+
+### 1. Important: Clean Your Schema Model First
+
+Before starting this lab, we need to ensure your schema model accurately reflects only what's currently in your database. If you have any schema model files from previous experimentation, they might cause AutoPilot to show unexpected DROP operations instead of the CREATE operations we want to demonstrate.
+
+**Clean up any existing wishlist artifacts:**
+
+1. **Navigate to your project folder** in File Explorer/Finder
+2. **Go to the `schema-model/` folder**
+3. **Look for any wishlist-related files** in:
+   - `schema-model/Tables/Sales/` (CustomerWishlists.sql, WishlistItems.sql)
+   - `schema-model/Views/Sales/` (CustomerWishlistAnalytics.sql)
+4. **Delete any wishlist files** if they exist from previous work
+5. **This ensures a clean starting point** for the lab
+
+### 2. Connect to Your E-Commerce Platform
 
 1. **Open Flyway Desktop** and ensure your project is loaded
 2. **Switch to the Schema Model tab**
@@ -46,6 +83,7 @@ Since you completed all migrations in Lab 3, Flyway Desktop should show **'No ch
 - All your tables (Customers, Products, Orders, CustomerLoyalty, ProductReviews) are in the schema model
 - Views (CustomerOrdersSummary, ProductInventoryStatus, ProductRatingSummary) are captured
 - Stored procedures (AddCustomerFeedback, UpdateProductStock) are tracked
+- **No wishlist tables should be present** in either database or schema model
 
 ### 2. Explore Your Current E-Commerce Schema
 
@@ -58,11 +96,15 @@ Take a moment to explore what AutoPilot has captured:
 - **Views**: Multiple business intelligence views
 - **Stored Procedures**: Customer feedback and inventory management
 
+**Important Note**: If you see any wishlist-related tables (CustomerWishlists, WishlistItems) in your schema model but NOT in your database, this creates a schema drift scenario where AutoPilot will want to DROP those tables. For this lab, we want to start clean and CREATE new tables, so make sure you've removed any wishlist artifacts from the schema-model/ folder as instructed in Step 1.
+
+**⚠️ Don't Panic About "Modified" Status**: You might also see some legitimate tables like CustomerLoyalty, ProductReviews, or InventoryAudit showing as "modified" in Flyway Desktop. This is normal! These are important tables from your e-commerce platform that should NOT be deleted. The "modified" status usually indicates minor schema formatting differences. Simply check all these legitimate changes and click "Save" to sync them - do NOT delete these files from your schema-model folder.
+
 This is your schema model - the single source of truth for your database structure!
 
 ## Step 2: Make Changes to Your E-Commerce Platform
 
-Now let's enhance our e-commerce platform by adding new functionality. We'll add a shopping cart feature and observe how AutoPilot captures these changes.
+Now let's enhance our e-commerce platform by adding new functionality. We'll add a customer wishlist feature and observe how AutoPilot captures these changes.
 
 ### 1. Connect to Your Development Database
 
@@ -184,6 +226,10 @@ Data changes detected: 8 inserts
 
 **This demonstrates AutoPilot's automated change detection capabilities.**
 
+**💡 Teaching Note**: If you see DROP operations instead of CREATE operations, it means there were leftover wishlist files in your schema-model/ folder from previous work. This is actually a great real-world example of schema drift detection - AutoPilot noticed that your schema model contained objects that weren't in your database! For this lab, we want the CREATE experience, so make sure you've cleaned the schema-model/ folder as instructed in Step 1.
+
+**⚠️ Important**: If you see legitimate tables like CustomerLoyalty, ProductReviews, or InventoryAudit showing as "modified" alongside your new wishlist tables, don't delete those schema model files! These are core e-commerce platform tables that belong in your schema. The "modified" status is just AutoPilot detecting minor formatting differences. Check all these legitimate changes and click "Save" to sync them up.
+
 ### 2. Review the Detected Changes
 
 Before saving, take a moment to review what AutoPilot detected:
@@ -226,6 +272,56 @@ When you saved to the schema model, Flyway AutoPilot:
 
 Your schema model now represents the current state of your enhanced e-commerce platform!
 
+## Step 4.5: Shadow Database Validation (Optional but Recommended)
+
+Before committing your changes, let's see how the **Shadow Database** validates your changes using AutoPilot's migration generation process:
+
+### 1. Navigate to Generate Migrations
+
+1. **In Flyway Desktop**, click on the **"Generate migrations"** tab in the left navigation
+2. **Click the "Refresh" button** in the Generate migrations panel
+3. **Wait for AutoPilot to analyze** your schema changes
+
+You should see a success message similar to:
+
+```
+✅ Shadow database did not need to be reprovisioned.
+✅ Successfully migrated shadow database to version 004. 4 migrations executed.
+```
+
+![Shadow Database](../../../assets/images/labs/lab4-shadowdb.png)
+
+### 2. Review the Change Detection Results
+
+In the changes list, you should now see your wishlist changes detected:
+
+**Expected Changes:**
+
+- **InventoryAudit** - 🔧 Modify (Table, Operation schema)
+- **ProductReviews** - 🔧 Modify (Table, Operation schema)
+- **CustomerLoyalty** - 🔧 Modify (Table, Sales schema)
+- **CustomerWishlists** - ➕ Create (Table, Sales schema)
+- **WishlistItems** - ➕ Create (Table, Sales schema)
+- **CustomerWishlistAnalytics** - ➕ Create (View, Sales schema)
+
+### 3. What This Demonstrates
+
+This shadow database validation shows:
+
+- **AutoPilot automatically updated** the shadow database to match your current migrations (V001-V004)
+- **Your new wishlist changes are detected** as CREATE operations (green ➕)
+- **Existing tables show as MODIFY** (orange 🔧) due to minor schema sync differences
+- **Shadow database is now ready** to compare against development changes
+
+This validation ensures that:
+
+- ✅ Shadow database has a clean baseline (all existing migrations applied)
+- ✅ Your new changes are properly isolated and detected
+- ✅ AutoPilot can accurately generate migration scripts
+- ✅ The comparison between development and shadow is accurate
+
+**This sets the stage perfectly for Lab 5 where you'll generate migration scripts from these detected changes.**
+
 ## Step 5: Commit Changes to Version Control
 
 ### 1. Review Uncommitted Changes
@@ -245,7 +341,7 @@ RedGateDatabaseInfo.xml (technical metadata)
 
 **Review these files** by clicking on each one to examine the clean DDL scripts that AutoPilot generated.
 
-### 2. Commit Your Shopping Cart Feature
+### 2. Commit Your Wishlist Feature
 
 1. **Select all the changes** you want to commit (typically all of them)
 2. **Enter a descriptive commit message** like:
@@ -343,11 +439,13 @@ Confirm you haveve successfully completed Lab 4:
 
 ### AutoPilot Workflow Verification
 
+- [ ] **Cleaned schema model folder** of any existing wishlist files ✅
 - [ ] Successfully refreshed Flyway Desktop to see current state
 - [ ] Made schema changes to add wishlist functionality
-- [ ] Detected changes automatically in AutoPilot
+- [ ] Detected **CREATE operations** automatically in AutoPilot (not DROP operations)
 - [ ] Reviewed generated DDL scripts for accuracy
 - [ ] Saved changes to schema model successfully
+- [ ] **Validated changes using shadow database comparison** ✅
 - [ ] Committed schema changes to version control
 
 ### E-Commerce Platform Verification
@@ -391,10 +489,10 @@ You now understand the core AutoPilot workflow for capturing and managing schema
 
 **In Lab 5**, you'll learn how to:
 
-- **Generate versioned migration scripts** from your schema model changes
-- **Deploy wishlist feature** to your UAT environment
-- **Create automated deployment pipelines** with Azure DevOps or GitHub Actions
-- **Manage database releases** across multiple environments
+- **Generate versioned migration scripts** from your schema model changes using shadow database comparison
+- **Deploy wishlist feature** to your shadow, UAT, and production environments
+- **Validate migration scripts** using the shadow database before UAT deployment
+- **Manage database releases** across the complete 4-environment pipeline
 - **Handle rollbacks** if something goes wrong
 
 **You are well on your way to mastering database DevOps.**
