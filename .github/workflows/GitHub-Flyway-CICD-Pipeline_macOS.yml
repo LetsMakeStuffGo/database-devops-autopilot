@@ -17,6 +17,27 @@ on:
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      deployment_target:
+        description: "Choose deployment target"
+        required: true
+        default: "development"
+        type: choice
+        options:
+          - "development"
+          - "uat"
+          - "production"
+          - "all"
+      skip_build:
+        description: "Skip build and use existing artifacts"
+        required: false
+        default: false
+        type: boolean
+      force_deploy:
+        description: "Force deployment (skip some safety checks)"
+        required: false
+        default: false
+        type: boolean
   workflow_call: # This enables the workflow to be called from other workflows
 env:
   # Enable this for additional debug logging
@@ -61,6 +82,7 @@ jobs:
     name: Deploy Development
     # The type of runner that the job will run on
     runs-on: "macos-latest" # Using macOS GitHub-hosted runners
+    if: ${{ !inputs.skip_build && (inputs.deployment_target == 'development' || inputs.deployment_target == 'all') }}
     environment: "development"
     env:
       stage: "Development"
@@ -135,7 +157,7 @@ jobs:
     name: Deploy UAT
     # The type of runner that the job will run on
     runs-on: "macos-latest" # Using macOS GitHub-hosted runners
-    if: ${{ true }} #Set this variable to false to temporarily disable the job
+    if: ${{ inputs.deployment_target == 'uat' || inputs.deployment_target == 'all' }}
     needs: build
     environment: "development" # For Secrets
     env:
@@ -159,8 +181,13 @@ jobs:
       FLYWAY_UAT_DATABASE: "${{ secrets.FLYWAY_UAT_DATABASE }}"
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checkout repository if skipping build (otherwise use artifacts)
+      - uses: actions/checkout@v4
+        if: ${{ inputs.skip_build }}
+
+      # Download build artifacts if not skipping build
       - uses: actions/download-artifact@v4
+        if: ${{ !inputs.skip_build }}
         with:
           name: flyway-build-artifact-${{ github.run_number }}
 
@@ -207,7 +234,7 @@ jobs:
     name: Deploy Production
     # The type of runner that the job will run on
     runs-on: self-hosted # Using self-hosted runners for production control
-    if: ${{ true }} #Set this variable to false to temporarily disable the job
+    if: ${{ inputs.deployment_target == 'production' || inputs.deployment_target == 'all' }}
     needs: uat
     environment: "development" # Required for accessing secrets/credentials
     env:
@@ -231,8 +258,13 @@ jobs:
       FLYWAY_PROD_DATABASE: "${{ secrets.FLYWAY_PROD_DATABASE }}"
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checkout repository if skipping build (otherwise use artifacts)
+      - uses: actions/checkout@v4
+        if: ${{ inputs.skip_build }}
+
+      # Download build artifacts if not skipping build
       - uses: actions/download-artifact@v4
+        if: ${{ !inputs.skip_build }}
         with:
           name: flyway-build-artifact-${{ github.run_number }}
 
@@ -283,6 +315,7 @@ jobs:
 
       # Step 4 - MANUAL APPROVAL STEP: Deploy to Production
       - name: Manual Approval Required
+        if: ${{ !inputs.force_deploy }}
         run: |
           echo "=============================================="
           echo "🚨 PRODUCTION DEPLOYMENT APPROVAL REQUIRED 🚨"
