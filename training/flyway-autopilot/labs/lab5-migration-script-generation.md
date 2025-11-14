@@ -62,47 +62,42 @@ By comparing the schema model against these existing scripts, Flyway can determi
 ### 2. Access Migration Generation
 
 1. **Open Flyway Desktop** and ensure your project is loaded
-2. **Navigate and click on the Generate Migration tab**
-3. Click on Compare to a target Database and confirm
-4. Select the available environment, in this case `db-autopilot-uat-001`
+2. **Navigate to the "Generate migrations" tab** (in the left navigation)
+3. **Click "Refresh"** to analyze your current changes
 
-![Migration Generation](../../../assets/images/labs/lab5-generate_migrations.png)
-![Migration Generation](../../../assets/images/labs/lab5-generate_migrations_3.png)
+![Migration Generation](../../../assets/images/labs/lab4-shadowdb.png)
 
-This will display all changes that have been captured in your schema model but do not yet have a migration script for deployment. In this case, we can click on the Migration Scripts, so we can run migrate first.
+You should see the same changes that were detected in Lab 4, now ready for migration script generation:
 
-![Migration Generation](../../../assets/images/labs/lab5-generate_migrations_2.png)
-
-Then, we can go back to the Generate migrations tab and **Run Compare** again.
-
-![Migration Generation](../../../assets/images/labs/lab5-generate_migrations_4.png)
+```
+✅ Shadow database did not need to be reprovisioned.
+✅ Successfully migrated shadow database to version 004. 4 migrations executed.
+```
 
 ### 3. Review Detected Changes
 
-Flyway will analyze your schema model and show you the changes that need migration scripts:
+AutoPilot will show you the same changes from Lab 4, now ready for migration script generation:
 
-**Expected Comparison Results:**
+**Expected Changes List:**
 
 ```
-Object Name              | Action | Type  | Schema
--------------------------|--------|-------|----------
-InventoryAudit          | Modify | Table | Operation
-ProductReviews          | Modify | Table | Operation
-CustomerLoyalty         | Modify | Table | Sales
-CustomerWishlists       | Create | Table | Sales
-WishlistItems          | Create | Table | Sales
-CustomerWishlistAnalytics| Create | View  | Sales
+Object Name              | Change Type | Object Type | Schema
+-------------------------|-------------|-------------|----------
+InventoryAudit          | 🔧 Modify   | Table       | Operation
+ProductReviews          | 🔧 Modify   | Table       | Operation
+CustomerLoyalty         | 🔧 Modify   | Table       | Sales
+CustomerWishlists       | ➕ Create   | Table       | Sales
+WishlistItems          | ➕ Create   | Table       | Sales
+CustomerWishlistAnalytics| ➕ Create   | View        | Sales
 ```
 
 **What This Means:**
 
-- **Modify Operations**: Minor differences detected in existing tables (likely formatting or metadata)
-- **Create Operations**: New wishlist functionality that needs to be deployed
-- **Focus on Creates**: The new wishlist tables and view are the main changes for this migration
+- **🔧 Modify Operations**: Minor schema differences in existing tables (formatting/metadata updates)
+- **➕ Create Operations**: Your new wishlist functionality that needs deployment
+- **Ready for Migration**: All changes have been validated by the shadow database
 
-**Note:** The "Modify" operations on existing tables are typically minor schema differences and can usually be included safely. Focus on the "Create" operations for your new wishlist functionality.
-
-**Note:** If you see connection errors related to shadow database, click **"Edit Connection"** to update the shadow database connection details to ensure Flyway connects to the correct environment.
+**Note:** These are the exact same changes you saw in Lab 4 Step 4.5, now ready to become migration scripts!
 
 ## Step 2: Select and Generate Scripts
 

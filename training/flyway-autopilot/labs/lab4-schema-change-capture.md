@@ -320,6 +320,27 @@ This validation ensures that:
 - ✅ AutoPilot can accurately generate migration scripts
 - ✅ The comparison between development and shadow is accurate
 
+### 🎯 **Key Teaching Point - Why This Works So Well:**
+
+```
+Development Database:           Shadow Database:
+├── V001 Baseline              ├── V001 Baseline
+├── V002 Welcome               ├── V002 Welcome
+├── V003 Customer Loyalty      ├── V003 Customer Loyalty
+├── V004 Product Reviews       ├── V004 Product Reviews
+├── CustomerWishlists (NEW!)   └── (stops here - clean!)
+├── WishlistItems (NEW!)
+└── CustomerWishlistAnalytics (NEW!)
+```
+
+**This Proves the Core AutoPilot Concept:**
+
+- **Shadow = Clean baseline** (only committed migrations V001-V004)
+- **Development = Active work** (migrations + your new manual changes)
+- **AutoPilot = Smart comparison** (detects the gap and generates V005 migration)
+
+**Why your CustomerWishlistAnalytics view isn't in shadow:** Because you created it manually in development! The shadow database only contains committed migrations, so AutoPilot can perfectly detect what's new and needs to become the next versioned migration script.
+
 **This sets the stage perfectly for Lab 5 where you'll generate migration scripts from these detected changes.**
 
 ## Step 5: Commit Changes to Version Control
