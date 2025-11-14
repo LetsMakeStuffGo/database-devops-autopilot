@@ -158,7 +158,6 @@ jobs:
     # The type of runner that the job will run on
     runs-on: "macos-latest" # Using macOS GitHub-hosted runners
     if: ${{ inputs.deployment_target == 'uat' || inputs.deployment_target == 'all' }}
-    needs: build
     environment: "development" # For Secrets
     env:
       stage: "UAT"
@@ -235,7 +234,6 @@ jobs:
     # The type of runner that the job will run on
     runs-on: self-hosted # Using self-hosted runners for production control
     if: ${{ inputs.deployment_target == 'production' || inputs.deployment_target == 'all' }}
-    needs: uat
     environment: "development" # Required for accessing secrets/credentials
     env:
       stage: "Production"
