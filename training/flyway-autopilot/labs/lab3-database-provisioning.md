@@ -138,40 +138,16 @@ Now we'll use the database setup script that's already in our repository:
    - Create `db-autopilot-shadow-001` database (Shadow/Validation)
    - Create `db-autopilot-uat-001` database (User Acceptance Testing)
    - Create `db-autopilot-prod-001` database (Production)
-   - Set up all required schemas in all databases:
-     - **Customers** (default schema)
-     - **Logistics**
-     - **Operation**
-     - **Sales**
+
+> **Important**: This script only creates empty databases. All schemas, tables, and data will be created later by Flyway migrations.
 
 5. **Execute the database creation script**:
-
-   **Step 1: Create the databases (connect to master database)**
 
    - **SSMS**: Press **F5** or click **Execute**
    - **Azure Data Studio**: Click **Run** or press **F5**
    - **VS Code**: Use Command Palette → **MS SQL: Execute Query**
 
-   **Step 2: Schema Setup (Optional - Baseline Migration Will Also Create Schemas)**
-
-   ⚠️ **Important Note**: The baseline migration `B001__baseline.sql` already creates all required schemas. However, if you want to verify schema creation before running Flyway migrations, you can optionally run the schema script.
-
-   **Optional Schema Pre-Setup:**
-
-   Since Azure SQL Database doesn't support `USE` statements, you must connect to each database individually to run the schema creation script:
-
-   **For each database (dev-001, shadow-001, uat-001, prod-001):**
-
-   1. **Connect to the specific database** (not master)
-   2. **Run the schema script**: `Scripts/SetupSchemas.sql`
-   3. **Verify success** by checking the output messages
-
-   **Alternative**: Use VS Code with SQL Server extension:
-
-   - Create separate connections for each database
-   - Run `SetupSchemas.sql` on each connection individually
-
-   **🎯 Recommended Approach**: Skip this step and let Flyway migrations create the schemas automatically when you run `flyway migrate` in the next step.
+   **That's it!** No additional schema setup is needed - the Flyway baseline migration will create all schemas and database objects.
 
    ![Success!](../../../assets/images/labs/lab3-query-success.png)
 
@@ -257,12 +233,7 @@ Shadow database is used for schema drift detection and migration validation.
    - `db-autopilot-uat-001` (UAT)
    - `db-autopilot-prod-001` (Production)
 
-3. Expand each database → **Security** → **Schemas** (or equivalent)
-4. Verify all schemas exist:
-   - `Customers`
-   - `Logistics`
-   - `Operation`
-   - `Sales`
+3. **The databases will be empty at this point** - schemas and tables will be created by Flyway migrations in the next step
 
 ## Step 5: Connect Databases to Flyway Desktop
 
@@ -287,15 +258,13 @@ Shadow database is used for schema drift detection and migration validation.
 ### 3. Verify Schema Discovery
 
 1. With a connected environment selected, explore the **schema view**
-2. You should see the **four schemas** we created:
+2. **At this point, the databases will be empty** - you'll only see the default `dbo` schema
+3. **After running the baseline migration**, you'll see the **four business schemas**:
 
-   - Customers (default)
+   - Customers (default schema for the application)
    - Logistics
    - Operation
    - Sales
-
-3. **If you ran the optional schema setup**, schemas will be visible immediately
-4. **If you skipped schema setup**, schemas will appear after running the baseline migration in the next step
 
 ![Desktop Environment View](../../../assets/images/labs/lab3-Desktop-looklike.png)
 

@@ -9,46 +9,95 @@
 -- ===========================
 
 -- Drop databases if they exist to ensure fresh setup
-IF DB_ID('db-autopilot-dev-001') IS NOT NULL
+PRINT 'Checking for existing databases...'
+
+-- Check what databases exist
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'db-autopilot-dev-001')
 BEGIN
-    ALTER DATABASE [db-autopilot-dev-001] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    PRINT 'Found db-autopilot-dev-001 - attempting to drop...'
     DROP DATABASE [db-autopilot-dev-001];
     PRINT 'db-autopilot-dev-001 Database Dropped'
+END
+ELSE
+BEGIN
+    PRINT 'db-autopilot-dev-001 Database does not exist - skipping drop'
 END;
 
-IF DB_ID('db-autopilot-shadow-001') IS NOT NULL
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'db-autopilot-shadow-001')
 BEGIN
-    ALTER DATABASE [db-autopilot-shadow-001] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    PRINT 'Found db-autopilot-shadow-001 - attempting to drop...'
     DROP DATABASE [db-autopilot-shadow-001];
     PRINT 'db-autopilot-shadow-001 Database Dropped'
+END
+ELSE
+BEGIN
+    PRINT 'db-autopilot-shadow-001 Database does not exist - skipping drop'
 END;
 
-IF DB_ID('db-autopilot-uat-001') IS NOT NULL
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'db-autopilot-uat-001')
 BEGIN
-    ALTER DATABASE [db-autopilot-uat-001] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    PRINT 'Found db-autopilot-uat-001 - attempting to drop...'
     DROP DATABASE [db-autopilot-uat-001];
     PRINT 'db-autopilot-uat-001 Database Dropped'
+END
+ELSE
+BEGIN
+    PRINT 'db-autopilot-uat-001 Database does not exist - skipping drop'
 END;
 
-IF DB_ID('db-autopilot-prod-001') IS NOT NULL
+IF EXISTS (SELECT name FROM sys.databases WHERE name = 'db-autopilot-prod-001')
 BEGIN
-    ALTER DATABASE [db-autopilot-prod-001] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    PRINT 'Found db-autopilot-prod-001 - attempting to drop...'
     DROP DATABASE [db-autopilot-prod-001];
     PRINT 'db-autopilot-prod-001 Database Dropped'
+END
+ELSE
+BEGIN
+    PRINT 'db-autopilot-prod-001 Database does not exist - skipping drop'
 END;
 
 -- Create all databases for complete DevOps pipeline
-IF DB_ID('db-autopilot-dev-001') IS NULL CREATE DATABASE [db-autopilot-dev-001];
-PRINT 'db-autopilot-dev-001 Database Created';
+PRINT 'Creating databases...'
 
-IF DB_ID('db-autopilot-shadow-001') IS NULL CREATE DATABASE [db-autopilot-shadow-001];
-PRINT 'db-autopilot-shadow-001 Database Created';
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'db-autopilot-dev-001')
+BEGIN
+    CREATE DATABASE [db-autopilot-dev-001];
+    PRINT 'db-autopilot-dev-001 Database Created';
+END
+ELSE
+BEGIN
+    PRINT 'db-autopilot-dev-001 Database already exists';
+END;
 
-IF DB_ID('db-autopilot-uat-001') IS NULL CREATE DATABASE [db-autopilot-uat-001];
-PRINT 'db-autopilot-uat-001 Database Created';
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'db-autopilot-shadow-001')
+BEGIN
+    CREATE DATABASE [db-autopilot-shadow-001];
+    PRINT 'db-autopilot-shadow-001 Database Created';
+END
+ELSE
+BEGIN
+    PRINT 'db-autopilot-shadow-001 Database already exists';
+END;
 
-IF DB_ID('db-autopilot-prod-001') IS NULL CREATE DATABASE [db-autopilot-prod-001];
-PRINT 'db-autopilot-prod-001 Database Created';
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'db-autopilot-uat-001')
+BEGIN
+    CREATE DATABASE [db-autopilot-uat-001];
+    PRINT 'db-autopilot-uat-001 Database Created';
+END
+ELSE
+BEGIN
+    PRINT 'db-autopilot-uat-001 Database already exists';
+END;
+
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'db-autopilot-prod-001')
+BEGIN
+    CREATE DATABASE [db-autopilot-prod-001];
+    PRINT 'db-autopilot-prod-001 Database Created';
+END
+ELSE
+BEGIN
+    PRINT 'db-autopilot-prod-001 Database already exists';
+END;
 GO
 
 PRINT N'Database setup completed successfully - 4 databases ready for AutoPilot training:';
@@ -60,11 +109,7 @@ PRINT N'';
 PRINT N'Environment Flow: DEV ↔ SHADOW → UAT → PRODUCTION';
 PRINT N'Shadow database is used for schema drift detection and migration validation.';
 PRINT N'';
-PRINT N'NEXT STEPS for Azure SQL Database:';
-PRINT N'1. Connect to each database individually';
-PRINT N'2. Run the schema creation script for each database:';
-PRINT N'   - Connect to db-autopilot-dev-001 and run SetupSchemas.sql';
-PRINT N'   - Connect to db-autopilot-shadow-001 and run SetupSchemas.sql';
-PRINT N'   - Connect to db-autopilot-uat-001 and run SetupSchemas.sql';
-PRINT N'   - Connect to db-autopilot-prod-001 and run SetupSchemas.sql';
-PRINT N'3. Or use the individual database setup scripts in the Scripts folder';
+PRINT N'NEXT STEPS:';
+PRINT N'1. Update flyway.toml with your Azure SQL Database connection details';
+PRINT N'2. Use Flyway Desktop or CLI to run migrations';
+PRINT N'3. The baseline migration (B001) will create all schemas and tables automatically';
