@@ -257,7 +257,7 @@ Shadow database is used for schema drift detection and migration validation.
 
 ### 3. Verify Schema Discovery
 
-1. With a connected environment selected, explore the **schema view**
+1. With a connected environment selected, explore the **Schema model** tab
 2. **At this point, the databases will be empty** - you'll only see the default `dbo` schema
 3. **After running the baseline migration**, you'll see the **four business schemas**:
 
@@ -265,6 +265,23 @@ Shadow database is used for schema drift detection and migration validation.
    - Logistics
    - Operation
    - Sales
+
+#### Understanding the Schema Model View
+
+When you open the **Schema model** tab in Flyway Desktop, you'll see a comparison view that shows:
+
+- **Object name**: Database objects (tables, views, procedures, schemas)
+- **Change type**: What would happen to each object:
+  - 🔴 **Drop** - Objects that exist in the schema model but not in the target database
+  - 🟢 **Create** - Objects that would be created in the target database
+  - 🟡 **Alter** - Objects that would be modified
+- **Object type**: Table, View, Procedure, Schema, etc.
+- **Schema**: Which business schema the object belongs to (Sales, Operation, etc.)
+
+> **Why do you see "Drop" everywhere initially?**
+> The schema model represents the expected final state of your database after all migrations. Since your database is currently empty (before running migrations), Flyway Desktop shows "Drop" for all the objects that should exist but don't yet. This is normal and expected!
+>
+> After running the baseline migration, these "Drop" indicators will disappear as the actual database matches the expected schema model.
 
 ![Desktop Environment View](../../../assets/images/labs/lab3-Desktop-looklike.png)
 
@@ -292,7 +309,7 @@ Now that databases are connected, deploy the baseline e-commerce platform:
 
 ### 2. Migration Results
 
-After successful migration execution, your database contains:
+After successful migration execution with the mssage **Flyway command completed**, your database contains:
 
 **E-Commerce Platform Components:**
 
