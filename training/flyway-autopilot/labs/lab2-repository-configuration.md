@@ -44,12 +44,30 @@ name = "Database DevOps AutoPilot Training"
 databaseType = "SqlServer"
 
 [environments.development]
-url = "jdbc:sqlserver://localhost;databaseName=db-autopilot-dev-001;encrypt=true;integratedSecurity=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://${env.AZURE_SQL_SERVER}.database.windows.net:1433;databaseName=${env.FLYWAY_DEV_DATABASE};encrypt=true;trustServerCertificate=false"
+user = "${env.AZURE_SQL_USER}"
+password = "${env.AZURE_SQL_PASSWORD}"
 displayName = "Development database"
+provisioner = "clean"
+
+[environments.shadow]
+url = "jdbc:sqlserver://${env.AZURE_SQL_SERVER}.database.windows.net:1433;databaseName=${env.FLYWAY_SHADOW_DATABASE};encrypt=true;trustServerCertificate=false"
+user = "${env.AZURE_SQL_USER}"
+password = "${env.AZURE_SQL_PASSWORD}"
+displayName = "Shadow database (validation)"
+provisioner = "clean"
 
 [environments.uat]
-url = "jdbc:sqlserver://localhost;databaseName=db-autopilot-uat-001;encrypt=true;integratedSecurity=true;trustServerCertificate=true"
+url = "jdbc:sqlserver://${env.AZURE_SQL_SERVER}.database.windows.net:1433;databaseName=${env.FLYWAY_UAT_DATABASE};encrypt=true;trustServerCertificate=false"
+user = "${env.AZURE_SQL_USER}"
+password = "${env.AZURE_SQL_PASSWORD}"
 displayName = "UAT (User Acceptance Testing) database"
+
+[environments.production]
+url = "jdbc:sqlserver://${env.AZURE_SQL_SERVER}.database.windows.net:1433;databaseName=${env.FLYWAY_PROD_DATABASE};encrypt=true;trustServerCertificate=false"
+user = "${env.AZURE_SQL_USER}"
+password = "${env.AZURE_SQL_PASSWORD}"
+displayName = "Production database"
 
 [flyway]
 locations = [ "filesystem:migrations" ]
@@ -67,7 +85,20 @@ mode = "all"
 [flyway.sqlserver.clean.schemas]
 exclude = [ "ExampleSchema1", "ExampleSchema2" ]
 
+[flywayDesktop]
+developmentEnvironment = "development"
+shadowEnvironment = "shadow"
+schemaModel = "./schema-model"
+
+[flywayDesktop.generate]
+undoScripts = true
 ```
+
+> **Note**: This configuration uses Azure SQL Database with environment variables for secure credential management. The environment variables (${env.VARIABLE_NAME}) are resolved at runtime from:
+>
+> - GitHub Secrets (in CI/CD pipelines)
+> - Local environment variables (for local development)
+> - Flyway Desktop credential management
 
 ### 2. Review the Repository Structure
 
@@ -79,7 +110,11 @@ database-devops-autopilot/
 ├── migrations/                    # Database migration scripts
 │   ├── B001__baseline.sql         # Baseline migration
 │   ├── V002__Welcome.sql          # Sample versioned migration
-│   └── U002__UNDO-Welcome.sql     # Undo script for V002
+│   ├── V003__Add_Customer_Loyalty.sql     # Customer loyalty features
+│   ├── V004__Enhanced_Product_Catalog.sql # Product catalog enhancements
+│   ├── U002__UNDO-Welcome.sql     # Undo script for V002
+│   ├── U003__UNDO-Add_Customer_Loyalty.sql # Undo script for V003
+│   └── U004__UNDO-Enhanced_Product_Catalog.sql # Undo script for V004
 ├── Scripts/                       # Database setup scripts
 │   └── CreateAutopilotDatabases.sql
 ├── Reports/                       # Migration reports output
@@ -94,7 +129,7 @@ database-devops-autopilot/
 
 ### 3. Review the Migration Files
 
-The repository already contains the initial migration files:
+The repository already contains the initial migration files for training:
 
 **migrations/B001\_\_baseline.sql** - Baseline migration:
 
@@ -108,7 +143,7 @@ GO
 PRINT N'Baseline migration completed'
 ```
 
-**migrations/V002\_\_Welcome.sql** - Sample versioned migration:
+**migrations/V002\_\_Welcome.sql** - Welcome migration:
 
 ```sql
 SET NUMERIC_ROUNDABORT OFF
@@ -118,15 +153,27 @@ GO
 PRINT N'Welcome to Flyway AutoPilot Training!'
 ```
 
-**migrations/U002\_\_UNDO-Welcome.sql** - Undo script:
+**migrations/V003\_\_Add_Customer_Loyalty.sql** - Customer loyalty features:
 
 ```sql
-SET NUMERIC_ROUNDABORT OFF
-GO
-SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
-GO
-PRINT N'Undoing Welcome migration'
+-- 🌟 V003: Customer Loyalty Program Enhancement
+-- Adding exciting customer loyalty features to boost engagement!
 ```
+
+**migrations/V004\_\_Enhanced_Product_Catalog.sql** - Product catalog enhancements:
+
+```sql
+-- 🛒 V004: Enhanced Product Catalog
+-- Adding product reviews and inventory tracking
+```
+
+**Corresponding Undo Scripts:**
+
+- **U002\_\_UNDO-Welcome.sql** - Undo script for V002
+- **U003\_\_UNDO-Add_Customer_Loyalty.sql** - Undo script for V003
+- **U004\_\_UNDO-Enhanced_Product_Catalog.sql** - Undo script for V004
+
+> **Note**: Additional migration files (V005+) will be created during the hands-on labs to demonstrate the migration workflow.
 
 ### 4. Review Database Setup Script
 
@@ -163,6 +210,39 @@ The repository includes `Scripts/CreateAutopilotDatabases.sql` for database prov
 
 **Don't panic, this error is expected.** This is simply because there are no AutoPilot databases to connect to yet. To create these, click on the **blue folder icon** in the upper right to jump to the files on disk.
 
+### Troubleshooting Common Connection Issues
+
+If you encounter a "Flyway Exception: Error encountered migrating development environment" error when trying to migrate to UAT:
+
+1. **Environment Variable Issues**: Ensure all required environment variables are set:
+
+   ```bash
+   echo $AZURE_SQL_SERVER
+   echo $FLYWAY_UAT_DATABASE
+   echo $AZURE_SQL_USER
+   # Password should be set but don't echo it for security
+   ```
+
+2. **Database Doesn't Exist**: The UAT database might not exist on your Azure SQL Server. Check if the database exists:
+
+   - Connect to your Azure SQL Server using Azure Data Studio or SSMS
+   - Verify the database name matches the `FLYWAY_UAT_DATABASE` environment variable
+
+3. **Network/Firewall Issues**: Ensure your IP address is allowed to connect to the Azure SQL Server:
+
+   - Check Azure SQL Server firewall rules
+   - Add your current IP address to the allowed list
+
+4. **Authentication Issues**: Verify your credentials are correct:
+
+   - Test connection using Azure Data Studio or SSMS with the same credentials
+   - Ensure the user has proper permissions on the target database
+
+5. **Use Local Configuration for Testing**: If environment variables are causing issues, try using the local configuration file:
+   ```bash
+   flyway -configFiles=1.flyway-local.toml info
+   ```
+
 ### 3. Explore the Project Structure
 
 Now click the **blue folder icon** in the upper right to jump to the files on disk and explore the structure:
@@ -172,8 +252,12 @@ database-devops-autopilot/
 ├── flyway.toml                    # Main Flyway configuration (matches FastTrack)
 ├── migrations/                    # Database migration scripts
 │   ├── B001__baseline.sql         # Baseline migration
-│   ├── V002__Welcome.sql          # Sample versioned migration
-│   └── U002__UNDO-Welcome.sql     # Undo script for V002
+│   ├── V002__Welcome.sql          # Welcome migration
+│   ├── V003__Add_Customer_Loyalty.sql     # Customer loyalty features
+│   ├── V004__Enhanced_Product_Catalog.sql # Product catalog enhancements
+│   ├── U002__UNDO-Welcome.sql     # Undo script for V002
+│   ├── U003__UNDO-Add_Customer_Loyalty.sql # Undo script for V003
+│   └── U004__UNDO-Enhanced_Product_Catalog.sql # Undo script for V004
 ├── Scripts/                       # Database setup scripts
 │   └── CreateAutopilotDatabases.sql
 ├── Reports/                       # Migration reports output
@@ -191,11 +275,14 @@ database-devops-autopilot/
 
 The flyway.toml includes important AutoPilot features:
 
-- **Two Environments**: Development and UAT (User Acceptance Testing)
-- **Integrated Security**: Uses Windows Authentication
+- **Four Environments**: Development, Shadow, UAT, and Production
+- **Azure SQL Database**: Cloud-hosted SQL Server instances
+- **Environment Variables**: Secure credential management using ${env.VARIABLE_NAME} syntax
+- **Shadow Database**: Dedicated environment for schema validation
 - **Default Schema**: Set to "Customers"
 - **Error Overrides**: Configured for SQL Server best practices
-- **Simplified Setup**: Perfect for training and learning3. Select **"Open from disk"**
+- **Flyway Desktop Integration**: Configured for development environment and schema modeling
+- **CI/CD Ready**: Environment variables can be set via GitHub Secrets or local environment
 
 4. Navigate to this repository folder (`database-devops-autopilot`)
 5. Select the `flyway.toml` file you just created
@@ -218,12 +305,41 @@ Now that you've successfully connected your repository to Flyway Desktop:
 
 ## Database Environments Overview
 
-Your configuration is ready with these environments (simplified for training):
+Your configuration is ready with these environments (using Azure SQL Database):
 
-| Environment | Purpose                  | Database Name        |
-| ----------- | ------------------------ | -------------------- |
-| development | Primary development work | db-autopilot-dev-001 |
-| uat         | User Acceptance Testing  | db-autopilot-uat-001 |
+| Environment | Purpose                  | Environment Variable   | Example Database Name   |
+| ----------- | ------------------------ | ---------------------- | ----------------------- |
+| development | Primary development work | FLYWAY_DEV_DATABASE    | db-autopilot-dev-001    |
+| shadow      | Schema validation        | FLYWAY_SHADOW_DATABASE | db-autopilot-shadow-001 |
+| uat         | User Acceptance Testing  | FLYWAY_UAT_DATABASE    | db-autopilot-uat-001    |
+| production  | Production deployment    | FLYWAY_PROD_DATABASE   | db-autopilot-prod-001   |
+
+### Required Environment Variables
+
+For this configuration to work, you need to set the following environment variables:
+
+```bash
+# Azure SQL Server Configuration
+AZURE_SQL_SERVER=your-server-name          # Without .database.windows.net suffix
+AZURE_SQL_USER=your-username
+AZURE_SQL_PASSWORD=your-password
+
+# Database Names
+FLYWAY_DEV_DATABASE=db-autopilot-dev-001
+FLYWAY_SHADOW_DATABASE=db-autopilot-shadow-001
+FLYWAY_UAT_DATABASE=db-autopilot-uat-001
+FLYWAY_PROD_DATABASE=db-autopilot-prod-001
+```
+
+### Local Development Alternative
+
+For local development, the repository also includes `1.flyway-local.toml` with hardcoded credentials for ease of use during training. To use the local configuration:
+
+```bash
+flyway -configFiles=1.flyway-local.toml info
+```
+
+> **Security Note**: The local configuration file contains hardcoded credentials and should only be used for training purposes. In production, always use environment variables or secure credential management.
 
 ## Reference Materials
 
