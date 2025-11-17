@@ -56,7 +56,7 @@ You can use either of these tools to connect to your Azure SQL Database:
 
 **Perfect for**: Windows users who prefer a full-featured database tool
 
-1. **Download SSMS**:
+1. **Download SSMS: Recommended(Only Windows)**:
 
    - Go to [Download SSMS](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
    - Download and install
@@ -72,7 +72,7 @@ Choose your preferred database management tool for this training.
 
 ### VS Code with SQL Server Extension
 
-- **Best for**: Developers already using VS Code or working in GitHub Codespaces
+- **Best for**: Developers already using VS Code
 - **Extension**: Install "SQL Server (mssql)" extension
 
 ## Step 3: Connect to Your SQL Server
@@ -109,157 +109,43 @@ Choose your preferred database management tool for this training.
    - **Password**: Your SQL Server password
 3. Click **Connect**
 
-## Step 4: Provision Your AutoPilot Databases
+## Step 4: Connect Databases to Flyway Desktop
 
-### 1. Execute the Database Setup Script
+### 1. Update Your Configuration
 
-Now we'll use the database setup script that's already in our repository:
-
-#### Using VS Code:
-
-1. Open the file: `Scripts/CreateAutopilotDatabases.sql` from your repository
-2. **Execute the script**:
-   - Right-click in the editor → "Execute Query"
-   - Or use Command Palette → "MS SQL: Execute Query"
-   - Or press **Ctrl+Shift+E**
-
-#### Using SSMS:
-
-1. **File** → **Open** → **File...**
-2. Navigate to: `Scripts/CreateAutopilotDatabases.sql`
-3. **Execute the script**:
-
-   - Press **F5** or click **Execute**
-
-4. **Review the script** - it will:
-
-   - Check if databases exist and clean them if needed
-   - Create `db-autopilot-dev-001` database (Development)
-   - Create `db-autopilot-shadow-001` database (Shadow/Validation)
-   - Create `db-autopilot-uat-001` database (User Acceptance Testing)
-   - Create `db-autopilot-prod-001` database (Production)
-
-> **Important**: This script only creates empty databases. All schemas, tables, and data will be created later by Flyway migrations.
-
-5. **Execute the database creation script**:
-
-   - **SSMS**: Press **F5** or click **Execute**
-   - **Azure Data Studio**: Click **Run** or press **F5**
-   - **VS Code**: Use Command Palette → **MS SQL: Execute Query**
-
-   **That's it!** No additional schema setup is needed - the Flyway baseline migration will create all schemas and database objects.
-
-   ![Success!](../../../assets/images/labs/lab3-query-success.png)
-
-### 2. Update Flyway Configuration for Your Azure SQL Database
-
-Update the `flyway.toml` file with your actual Azure SQL Database connection details:
-
-1. **Open `flyway.toml`** in your repository
-2. **Update the connection strings** with your actual Azure SQL Database details:
+Since Hamish has provided you with your database credentials and database names, make sure your `1.flyway-desktop.toml` file is updated with your assigned values:
 
 ```toml
 [environments.development]
-url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-dev-001;encrypt=true;trustServerCertificate=false"
-user = "your_username"
-password = "your_password"
-displayName = "Development database"
-
-[environments.shadow]
-url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-shadow-001;encrypt=true;trustServerCertificate=false"
-user = "your_username"
-password = "your_password"
-displayName = "Shadow database (validation)"
-provisioner = "clean"
-
-[environments.uat]
-url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-uat-001;encrypt=true;trustServerCertificate=false"
-user = "your_username"
-password = "your_password"
-displayName = "UAT (User Acceptance Testing) database"
-
-[environments.production]
-url = "jdbc:sqlserver://YOUR_SERVER.database.windows.net:1433;databaseName=db-autopilot-prod-001;encrypt=true;trustServerCertificate=false"
-user = "your_username"
-password = "your_password"
-displayName = "Production database"
+url = "jdbc:sqlserver://your-assigned-server.database.windows.net:1433;databaseName=your-assigned-dev-db;encrypt=true;trustServerCertificate=false"
+user = "your-assigned-username"
+password = "your-assigned-password"
+displayName = "Development Database"
 ```
 
-**Replace these values:**
-
-- `YOUR_SERVER` → Your Azure SQL Server name (e.g., `sqlbits`)
-- `your_username` → Your SQL Server login
-- `your_password` → Your SQL Server password
-
-**Example with actual values:**
-
-```toml
-[environments.development]
-url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=db-autopilot-dev-001;encrypt=true;trustServerCertificate=false"
-user = "sqluser"
-password = "MySecurePassword123!"
-displayName = "Development database"
-```
-
-**Important Security Note:**  
-⚠️ For training purposes, we're putting credentials directly in the file. In production environments, you should use environment variables or Azure Key Vault for credential management.
-
-### 3. Verify Database Creation
-
-After executing the script, you should see:
-
-```
-db-autopilot-dev-001 Database Created
-db-autopilot-shadow-001 Database Created
-db-autopilot-uat-001 Database Created
-db-autopilot-prod-001 Database Created
-Database setup completed successfully - 4 databases ready for AutoPilot training:
-  - db-autopilot-dev-001 (Development)
-  - db-autopilot-shadow-001 (Shadow/Validation)
-  - db-autopilot-uat-001 (User Acceptance Testing)
-  - db-autopilot-prod-001 (Production)
-
-Environment Flow: DEV ↔ SHADOW → UAT → PRODUCTION
-Shadow database is used for schema drift detection and migration validation.
-```
-
-**Verify in Object Explorer/Database List**:
-
-1. Refresh the database list in your SQL tool
-2. You should see all four databases:
-
-   - `db-autopilot-dev-001` (Development)
-   - `db-autopilot-shadow-001` (Shadow)
-   - `db-autopilot-uat-001` (UAT)
-   - `db-autopilot-prod-001` (Production)
-
-3. **The databases will be empty at this point** - schemas and tables will be created by Flyway migrations in the next step
-
-## Step 5: Connect Databases to Flyway Desktop
-
-### 1. Return to Flyway Desktop
+### 2. Return to Flyway Desktop
 
 1. Switch back to **Flyway Desktop**
 2. You should still have your project open from Lab 2
 3. If not, open the project again:
    - **Open project...** → **Open from disk**
-   - Select your `flyway.toml` file
+   - Select your `1.flyway-desktop.toml` file
 
 - **It should pop-up for Reload and everything should show up!**
 
-### 2. Check Database Connections
+### 3. Check Database Connections
 
-- In Flyway Desktop, you should see **four environments** by clicking on the Environments tab:
-  - **Development** (db-autopilot-dev-001)
-  - **Shadow** (db-autopilot-shadow-001)
-  - **UAT** (db-autopilot-uat-001)
-  - **Production** (db-autopilot-prod-001)
+- In Flyway Desktop, you should see **your assigned environments** by clicking on the Environments tab:
+  - **Development** (your assigned dev database)
+  - **Shadow** (your assigned shadow database)
+  - **UAT** (your assigned UAT database)
+  - **Production** (your assigned production database)
 
-### 3. Verify Schema Discovery
+### 4. Verify Schema Discovery
 
 1. With a connected environment selected, explore the **Schema model** tab
 2. **At this point, the databases will be empty** - you'll only see the default `dbo` schema
-3. **After running the baseline migration**, you'll see the **four business schemas**:
+3. **After running the baseline migration**, you'll see the **four schemas**:
 
    - Customers (default schema for the application)
    - Logistics
@@ -285,7 +171,7 @@ When you open the **Schema model** tab in Flyway Desktop, you'll see a compariso
 
 ![Desktop Environment View](../../../assets/images/labs/lab3-Desktop-looklike.png)
 
-## Step 6: Execute Baseline Migrations
+## Step 5: Execute Baseline Migrations
 
 ### 1. Deploy the E-Commerce Platform
 

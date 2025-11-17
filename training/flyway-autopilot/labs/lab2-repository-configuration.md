@@ -475,37 +475,6 @@ This lab uses the official Database DevOps AutoPilot training repository:
 - **[Official Repository Setup Guide](https://documentation.red-gate.com/flyway/getting-started-with-flyway/first-steps-flyway-autopilot-a-beginners-guide/flyway-autopilot-fasttrack/2-getting-your-repository-ready)**
 - **[Flyway Desktop Documentation](https://documentation.red-gate.com/flyway/getting-started-with-flyway/installers)**
 
-### Repository Structure Reference
-
-The cloned repository follows industry best practices:
-
-**📁 Core Flyway Files:**
-
-- `flyway.toml` - Production configuration with environment variables
-- `migrations/` - All database migration scripts in chronological order
-- `schema-model/` - Schema model for change detection and collaboration
-
-**🔧 Development Tools:**
-
-- `1.flyway-desktop.toml` - Flyway Desktop with training credentials
-- `Scripts/` - Database setup and utility scripts
-- `Reports/` - Migration execution reports and validation
-
-**🚀 CI/CD Integration:**
-
-- `.github/workflows/` - GitHub Actions pipeline templates
-- `actions-runner/` - Self-hosted GitHub runner configuration
-- Environment variable patterns for secure deployment
-
-This structure enables:
-
-- **Team collaboration** through schema model version control
-- **Multi-environment deployment** with secure credential management
-- **Automated testing** and validation through CI/CD pipelines
-- **Production-ready patterns** following Redgate best practices
-
----
-
 ## 🔗 Navigation
 
 **⬅️ [Previous: Lab 1 - Environment Setup](/database-devops-autopilot/training/flyway-autopilot/labs/lab1-environment-setup)** | **🏠 [Workshop Overview](/database-devops-autopilot/training/flyway-autopilot/labs/)** | **➡️ [Next: Lab 3 - Database Provisioning](/database-devops-autopilot/training/flyway-autopilot/labs/lab3-database-provisioning)**
