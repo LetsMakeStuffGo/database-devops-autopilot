@@ -186,12 +186,15 @@ Now that databases are connected, deploy the baseline e-commerce platform:
    - `V003__Add_Customer_Loyalty.sql` - **Customer Loyalty Program** (points and levels)
    - `V004__Enhanced_Product_Catalog.sql` - **Product Reviews System** (ratings and inventory tracking)
 
-   ℹ️ **Note**: The baseline migration `B001__baseline.sql` creates all required schemas (Customers, Logistics, Operation, Sales), so the manual schema setup in Step 5.2 was optional.
+   ℹ️ **Note**: The baseline migration `B001__baseline.sql` creates all required schemas (Customers, Logistics, Operation, Sales).
 
 3. Select **Development Database** as your target environment
 4. **Execute the migrations**:
+
    - Click **Run Migrate** button in Flyway Desktop
    - Monitor the migration execution progress
+
+   ![Success](../../../assets/images/labs/lab3-success-migration.png)
 
 ### 2. Migration Results
 
