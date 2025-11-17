@@ -66,9 +66,8 @@ You should see a structure like this:
 ```
 database-devops-autopilot/
 ├── README.md                          # Project documentation
-├── flyway.toml                        # Main Flyway configuration (CI/CD)
-├── 1.flyway-local.toml                # Local development configuration
-├── 2.flyway-pipeline.toml             # Pipeline-specific configuration
+├── 1.flyway-desktop.toml              # Flyway Desktop configuration
+├── 2.flyway-pipeline.toml             # CI/CD pipeline configuration
 ├── migrations/                        # Database migration scripts
 │   ├── B001__baseline.sql             # E-commerce platform baseline
 │   ├── V002__Welcome.sql              # Welcome migration
@@ -84,7 +83,6 @@ database-devops-autopilot/
 │   ├── Tables/                        # Table definitions
 │   └── Views/                         # View definitions
 ├── .github/workflows/                 # GitHub Actions CI/CD pipelines
-├── AzureDevOps/                       # Azure DevOps pipeline templates
 └── training/                          # Training materials and labs
     └── flyway-autopilot/
         └── labs/                      # Lab instructions (this file!)
@@ -119,11 +117,11 @@ This repository contains everything you need for Database DevOps with Flyway Aut
 
 ### 1. Understanding the Two Configuration Files
 
-The repository contains two main Flyway configuration files for different use cases:
+The repository contains two main Flyway configuration files for different use cases (If not exists, you can create one):
 
-#### Configuration 1: Local Development (Flyway Desktop)
+#### Configuration 1: Flyway Desktop Development
 
-**File: `1.flyway-local.toml`** - Used for local development and Flyway Desktop
+**File: `1.flyway-desktop.toml`** - Used for Flyway Desktop development and testing
 
 ```toml
 id = "database-devops-autopilot-local"
@@ -131,23 +129,29 @@ name = "Database DevOps AutoPilot (Local Development)"
 databaseType = "SqlServer"
 
 [environments.development]
-url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=db-autopilot-dev-001;encrypt=true;trustServerCertificate=false"
+url = "jdbc:sqlserver://your-server.database.windows.net:1433;databaseName=db-autopilot-dev-001;encrypt=true;trustServerCertificate=false"
 user = "sqladmin"
-password = "YourActualPassword"
+password = "YourPassword123!"
 displayName = "Development Database"
 
 [environments.shadow]
-url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=db-autopilot-shadow-001;encrypt=true;trustServerCertificate=false"
+url = "jdbc:sqlserver://your-server.database.windows.net:1433;databaseName=db-autopilot-shadow-001;encrypt=true;trustServerCertificate=false"
 user = "sqladmin"
-password = "YourActualPassword"
+password = "YourPassword123!"
 displayName = "Shadow Database (Validation)"
 provisioner = "clean"
 
 [environments.uat]
-url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=db-autopilot-uat-001;encrypt=true;trustServerCertificate=false"
+url = "jdbc:sqlserver://your-server.database.windows.net:1433;databaseName=db-autopilot-uat-001;encrypt=true;trustServerCertificate=false"
 user = "sqladmin"
-password = "YourActualPassword"
+password = "YourPassword123!"
 displayName = "UAT Database"
+
+[environments.production]
+url = "jdbc:sqlserver://your-server.database.windows.net:1433;databaseName=db-autopilot-prod-001;encrypt=true;trustServerCertificate=false"
+user = "sqladmin"
+password = "YourPassword123!"
+displayName = "Production Database"
 
 [flyway]
 locations = [ "filesystem:migrations" ]
@@ -168,6 +172,8 @@ schemaModel = "./schema-model"
 undoScripts = true
 ```
 
+````
+
 **✅ Use this configuration for:**
 
 - **Flyway Desktop** development and testing
@@ -177,7 +183,7 @@ undoScripts = true
 
 #### Configuration 2: CI/CD Pipelines (Production)
 
-**File: `flyway.toml`** - Used for CI/CD pipelines and production deployments
+**File: `2.flyway-pipeline.toml`** - Used for CI/CD pipelines and production deployments
 
 ```toml
 id = "database-devops-autopilot-training"
@@ -227,28 +233,30 @@ schemaModel = "./schema-model"
 
 [flywayDesktop.generate]
 undoScripts = true
-```
+````
 
 **🚀 Use this configuration for:**
 
 - **GitHub Actions** workflows
-- **Azure DevOps** pipelines
+- **CI/CD pipelines**
 - **Production deployments**
 - **Environment variable** based credential management
 - **Team collaboration** with secure secrets
 
 ### 2. Configuration Comparison
 
-| Feature          | Local Development (`1.flyway-local.toml`) | CI/CD Pipeline (`flyway.toml`)   |
-| ---------------- | ----------------------------------------- | -------------------------------- |
-| **Primary Use**  | Flyway Desktop & Local Development        | GitHub Actions & Azure DevOps    |
-| **Credentials**  | Hardcoded (training convenience)          | Environment Variables (secure)   |
-| **Environments** | 3 (dev, shadow, uat)                      | 4 (dev, shadow, uat, production) |
-| **Security**     | ⚠️ Training only                          | ✅ Production ready              |
-| **Team Sharing** | ❌ Contains passwords                     | ✅ Uses secrets                  |
-| **Best For**     | Learning & Development                    | Production Deployment            |
+Here's a quick comparison of the two configurations:
 
-> **For this training**, we'll use `1.flyway-local.toml` with Flyway Desktop for hands-on learning, then explore `flyway.toml` to understand production patterns.
+| Feature          | Flyway Desktop (`1.flyway-desktop.toml`) | CI/CD Pipeline (`2.flyway-pipeline.toml`) |
+| ---------------- | ---------------------------------------- | ----------------------------------------- |
+| **Primary Use**  | Flyway Desktop & Development             | GitHub Actions & CI/CD Pipelines          |
+| **Credentials**  | Hardcoded (example values)               | Environment Variables (secure)            |
+| **Environments** | 4 (dev, shadow, uat, production)         | 4 (dev, shadow, uat, production)          |
+| **Security**     | ⚠️ Training only                         | ✅ Production ready                       |
+| **Team Sharing** | ❌ Contains passwords                    | ✅ Uses secrets                           |
+| **Best For**     | Learning & Development                   | Production Deployment                     |
+
+> **For this training**, we'll use `1.flyway-desktop.toml` with Flyway Desktop for hands-on learning, then explore `2.flyway-pipeline.toml` to understand production patterns.
 
 > **Note**: This configuration uses Azure SQL Database with environment variables for secure credential management. The environment variables (${env.VARIABLE_NAME}) are resolved at runtime from:
 >
@@ -280,7 +288,6 @@ database-devops-autopilot/
 │   ├── Tables/
 │   └── Views/
 ├── .github/workflows/             # GitHub Actions CI/CD
-└── AzureDevOps/                   # Azure DevOps pipelines
 ```
 
 ### 3. Review the Migration Files
@@ -289,37 +296,19 @@ The repository already contains the initial migration files for training:
 
 **migrations/B001\_\_baseline.sql** - Baseline migration:
 
-```sql
--- Baseline migration for Flyway AutoPilot Training
--- This establishes the starting point for schema versioning
-SET NUMERIC_ROUNDABORT OFF
-GO
-SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
-GO
-PRINT N'Baseline migration completed'
-```
-
 **migrations/V002\_\_Welcome.sql** - Welcome migration:
-
-```sql
-SET NUMERIC_ROUNDABORT OFF
-GO
-SET ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, ARITHABORT, QUOTED_IDENTIFIER, ANSI_NULLS ON
-GO
-PRINT N'Welcome to Flyway AutoPilot Training!'
-```
 
 **migrations/V003\_\_Add_Customer_Loyalty.sql** - Customer loyalty features:
 
 ```sql
--- 🌟 V003: Customer Loyalty Program Enhancement
+-- V003: Customer Loyalty Program Enhancement
 -- Adding exciting customer loyalty features to boost engagement!
 ```
 
 **migrations/V004\_\_Enhanced_Product_Catalog.sql** - Product catalog enhancements:
 
 ```sql
--- 🛒 V004: Enhanced Product Catalog
+-- V004: Enhanced Product Catalog
 -- Adding product reviews and inventory tracking
 ```
 
@@ -331,17 +320,31 @@ PRINT N'Welcome to Flyway AutoPilot Training!'
 
 > **Note**: Additional migration files (V005+) will be created during the hands-on labs to demonstrate the migration workflow.
 
-### 4. Review Database Setup Script
+### 4. Database Setup and Credentials
 
-The repository includes `Scripts/CreateAutopilotDatabases.sql` for database provisioning.
+**📋 Databases and Credentials Provided**
 
-```sql
-### 4. Review Database Setup Script
+For this training, Hamish will provide you with individual database names and credentials to avoid server overload. You'll receive:
 
-The repository includes `Scripts/CreateAutopilotDatabases.sql` for database provisioning. This script will create both training databases (db-autopilot-dev-001 and db-autopilot-uat-001) with all required schemas.
+- **Server name** (Azure SQL Database server)
+- **Username and password** for your training account
+- **Individual database names** for each environment:
+  - Development database (e.g., `db-autopilot-dev-xxx`)
+  - Shadow database (e.g., `db-autopilot-shadow-xxx`)
+  - UAT database (e.g., `db-autopilot-uat-xxx`)
 
-## Step 2: Connect Repository to Flyway Desktop
+**🔧 Update Your Configuration**
+
+Once you receive your credentials, update your `1.flyway-desktop.toml` file with your assigned values:
+
+```toml
+[environments.development]
+url = "jdbc:sqlserver://your-assigned-server.database.windows.net:1433;databaseName=your-assigned-dev-db;encrypt=true;trustServerCertificate=false"
+user = "your-assigned-username"
+password = "your-assigned-password"
 ```
+
+> **Note**: This approach ensures stable performance during training and gives everyone their own isolated environment to work with.
 
 ## Step 3: Connect Repository to Flyway Desktop
 
@@ -349,55 +352,30 @@ The repository includes `Scripts/CreateAutopilotDatabases.sql` for database prov
 
 1. Launch **Flyway Desktop**
 2. Click **"Open project..."**
-3. Select **"Open from disk"**
+3. Select **"Open local file"**
 4. Navigate to your **cloned repository folder** (`database-devops-autopilot`)
-5. Select the **existing** `flyway.toml` file
+5. Select the **existing** `1.flyway-desktop.toml` file
 6. Click **"Open"**
 
 ![Find Toml File](../../../assets/images/Find_Toml.png)
 
 > **Note**: You now have a local copy of the complete training repository with all migrations, schema models, and configurations ready for use!
 
-### 2. Handle Expected Connection Error
+### 2. Success! Flyway Desktop Connected
 
-**Don't panic!** You'll see a connection error - this is expected.
+If you've updated your `1.flyway-desktop.toml` file with the correct credentials provided by Hamish, Flyway Desktop should connect successfully and show you the main interface with:
 
-![Expected Database Error](../../../assets/images/labs/lab2-error.png)
+- **Schema model view** showing your database structure
 
-**Don't panic, this error is expected.** This is simply because there are no AutoPilot databases to connect to yet. To create these, click on the **blue folder icon** in the upper right to jump to the files on disk.
+### 3. If You See Connection Errors
 
-### Troubleshooting Common Connection Issues
+**Only if you haven't updated your credentials yet**, you might see connection errors. This happens when:
 
-If you encounter a "Flyway Exception: Error encountered migrating development environment" error when trying to migrate to UAT:
+- You're still using the example credentials (`your-server.database.windows.net`, `YourPassword123!`)
+- Your assigned databases haven't been created yet
+- Network connectivity issues
 
-1. **Environment Variable Issues**: Ensure all required environment variables are set:
-
-   ```bash
-   echo $AZURE_SQL_SERVER
-   echo $FLYWAY_UAT_DATABASE
-   echo $AZURE_SQL_USER
-   # Password should be set but don't echo it for security
-   ```
-
-2. **Database Doesn't Exist**: The UAT database might not exist on your Azure SQL Server. Check if the database exists:
-
-   - Connect to your Azure SQL Server using Azure Data Studio or SSMS
-   - Verify the database name matches the `FLYWAY_UAT_DATABASE` environment variable
-
-3. **Network/Firewall Issues**: Ensure your IP address is allowed to connect to the Azure SQL Server:
-
-   - Check Azure SQL Server firewall rules
-   - Add your current IP address to the allowed list
-
-4. **Authentication Issues**: Verify your credentials are correct:
-
-   - Test connection using Azure Data Studio or SSMS with the same credentials
-   - Ensure the user has proper permissions on the target database
-
-5. **Use Local Configuration for Testing**: If environment variables are causing issues, try using the local configuration file:
-   ```bash
-   flyway -configFiles=1.flyway-local.toml info
-   ```
+**Quick Fix**: Double-check that you've updated your `1.flyway-desktop.toml` file with the real credentials provided by Hamish.
 
 ### 3. Explore the Project Structure
 
@@ -405,9 +383,8 @@ Now click the **blue folder icon** in the upper right to jump to the files on di
 
 ```
 database-devops-autopilot/
-├── flyway.toml                        # Main Flyway configuration (CI/CD)
-├── 1.flyway-local.toml                # Local development configuration
-├── 2.flyway-pipeline.toml             # Pipeline-specific configuration
+├── 1.flyway-desktop.toml              # Flyway Desktop configuration
+├── 2.flyway-pipeline.toml             # CI/CD pipeline configuration
 ├── migrations/                        # Database migration scripts
 │   ├── B001__baseline.sql             # E-commerce platform baseline
 │   ├── V002__Welcome.sql              # Welcome migration
@@ -422,7 +399,8 @@ database-devops-autopilot/
 │   ├── Tables/                        # Table definitions
 │   └── Views/                         # View definitions
 ├── .github/workflows/                 # GitHub Actions CI/CD
-├── AzureDevOps/                       # Azure DevOps pipelines
+├── assets/                            # Web assets (CSS, images, JS)
+├── docs/                              # Additional documentation
 └── training/flyway-autopilot/         # Training materials (including these labs!)
 ```
 
@@ -431,7 +409,6 @@ This is a complete, production-ready Database DevOps repository that demonstrate
 - **Multi-environment configuration** (development, shadow, UAT, production)
 - **CI/CD pipeline integration** (GitHub Actions + Azure DevOps)
 - **Schema model management** for collaboration
-- **Real-world e-commerce example** with comprehensive business logic
 
 ### 4. Key Configuration Features
 
@@ -445,10 +422,6 @@ The flyway.toml includes important AutoPilot features:
 - **Error Overrides**: Configured for SQL Server best practices
 - **Flyway Desktop Integration**: Configured for development environment and schema modeling
 - **CI/CD Ready**: Environment variables can be set via GitHub Secrets or local environment
-
-4. Navigate to this repository folder (`database-devops-autopilot`)
-5. Select the `flyway.toml` file you just created
-6. Click **"Open"**
 
 ## Next Steps
 
@@ -471,10 +444,10 @@ Your configuration is ready with these environments (using Azure SQL Database):
 
 | Environment | Purpose                  | Environment Variable   | Example Database Name   |
 | ----------- | ------------------------ | ---------------------- | ----------------------- |
-| development | Primary development work | FLYWAY_DEV_DATABASE    | db-autopilot-dev-001    |
-| shadow      | Schema validation        | FLYWAY_SHADOW_DATABASE | db-autopilot-shadow-001 |
-| uat         | User Acceptance Testing  | FLYWAY_UAT_DATABASE    | db-autopilot-uat-001    |
-| production  | Production deployment    | FLYWAY_PROD_DATABASE   | db-autopilot-prod-001   |
+| development | Primary development work | FLYWAY_DEV_DATABASE    | db-autopilot-dev-xxx    |
+| shadow      | Schema validation        | FLYWAY_SHADOW_DATABASE | db-autopilot-shadow-xxx |
+| uat         | User Acceptance Testing  | FLYWAY_UAT_DATABASE    | db-autopilot-uat-xxx    |
+| production  | Production deployment    | FLYWAY_PROD_DATABASE   | db-autopilot-prod-xxx   |
 
 ### Required Environment Variables
 
@@ -487,36 +460,11 @@ AZURE_SQL_USER=your-username
 AZURE_SQL_PASSWORD=your-password
 
 # Database Names
-FLYWAY_DEV_DATABASE=db-autopilot-dev-001
-FLYWAY_SHADOW_DATABASE=db-autopilot-shadow-001
-FLYWAY_UAT_DATABASE=db-autopilot-uat-001
-FLYWAY_PROD_DATABASE=db-autopilot-prod-001
+FLYWAY_DEV_DATABASE=db-autopilot-dev-xxx
+FLYWAY_SHADOW_DATABASE=db-autopilot-shadow-xxx
+FLYWAY_UAT_DATABASE=db-autopilot-uat-xxx
+FLYWAY_PROD_DATABASE=db-autopilot-prod-xxx
 ```
-
-### Local Development Alternative
-
-For local development, the repository also includes `1.flyway-local.toml` with hardcoded credentials for ease of use during training. To use the local configuration:
-
-```bash
-flyway -configFiles=1.flyway-local.toml info
-```
-
-> **Security Note**: The local configuration file contains hardcoded credentials and should only be used for training purposes. In production, always use environment variables or secure credential management.
-
-### Understanding the Configuration Files
-
-The repository includes multiple Flyway configurations for different scenarios:
-
-| File                     | Purpose           | Usage                                            |
-| ------------------------ | ----------------- | ------------------------------------------------ |
-| `flyway.toml`            | CI/CD pipelines   | Uses environment variables for secure deployment |
-| `1.flyway-local.toml`    | Local development | Hardcoded credentials for training convenience   |
-| `2.flyway-pipeline.toml` | Pipeline-specific | Alternative pipeline configuration               |
-
-**For this training**, we'll primarily use:
-
-- **`1.flyway-local.toml`** for quick local development and testing
-- **`flyway.toml`** to understand production-ready environment variable patterns
 
 ## Reference Materials
 
@@ -539,14 +487,14 @@ The cloned repository follows industry best practices:
 
 **🔧 Development Tools:**
 
-- `1.flyway-local.toml` - Local development with training credentials
+- `1.flyway-desktop.toml` - Flyway Desktop with training credentials
 - `Scripts/` - Database setup and utility scripts
 - `Reports/` - Migration execution reports and validation
 
 **🚀 CI/CD Integration:**
 
 - `.github/workflows/` - GitHub Actions pipeline templates
-- `AzureDevOps/` - Azure DevOps pipeline YAML files
+- `actions-runner/` - Self-hosted GitHub runner configuration
 - Environment variable patterns for secure deployment
 
 This structure enables:
