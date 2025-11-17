@@ -68,7 +68,7 @@ Before setting up environments, you need to update the database names with your 
 
 ```toml
 [environments.Build]
-url = "...databaseName=db-autopilot-build-xxx;..."
+url = "...databaseName=db-autopilot-dev-xxx;..."
 
 [environments.Test]
 url = "...databaseName=db-autopilot-uat-xxx;..."
@@ -81,7 +81,7 @@ url = "...databaseName=db-autopilot-prod-xxx;..."
 
 ```toml
 [environments.Build]
-url = "...databaseName=db-autopilot-build-001;..."
+url = "...databaseName=db-autopilot-dev-001;..."
 
 [environments.Test]
 url = "...databaseName=db-autopilot-uat-001;..."
@@ -99,7 +99,7 @@ url = "...databaseName=db-autopilot-prod-001;..."
 
 ```yaml
 # Build job
-DATABASE_NAME: "db-autopilot-build-xxx"
+DATABASE_NAME: "db-autopilot-dev-xxx"
 
 # Test job
 DATABASE_NAME: "db-autopilot-uat-xxx"
@@ -112,7 +112,7 @@ DATABASE_NAME: "db-autopilot-prod-xxx"
 
 ```yaml
 # Build job
-DATABASE_NAME: "db-autopilot-build-001"
+DATABASE_NAME: "db-autopilot-dev-001"
 
 # Test job
 DATABASE_NAME: "db-autopilot-uat-001"
@@ -125,7 +125,7 @@ DATABASE_NAME: "db-autopilot-prod-001"
 
 Make sure you have access to these three databases on the SQL Server:
 
-- `db-autopilot-build-[your-number]`
+- `db-autopilot-dev-[your-number]`
 - `db-autopilot-uat-[your-number]`
 - `db-autopilot-prod-[your-number]`
 
@@ -214,9 +214,9 @@ Prod Environment     → Production deployment
 
 **Database Mapping (from `2.flyway-pipeline.toml`):**
 
-- **Build Environment** → `AutoPilotBuild` database
-- **Test Environment** → `AutoPilotTest` database
-- **Prod Environment** → `AutoPilotProd` database
+- **Build Environment** → `db-autopilot-dev-[your-number]` database
+- **Test Environment** → `db-autopilot-uat-[your-number]` database
+- **Prod Environment** → `db-autopilot-prod-[your-number]` database
 
 ### 2. Create GitHub Environments
 
@@ -292,9 +292,9 @@ CUSTOM_PARAMS               → -X (optional - debug mode)
 
 **Same Database Credentials:** All environments connect to the same Azure SQL Server, just different databases:
 
-- `build` → `AutoPilotBuild` (database name hardcoded in `2.flyway-pipeline.toml`)
-- `test` → `AutoPilotTest` (database name hardcoded in `2.flyway-pipeline.toml`)
-- `prod` → `AutoPilotProd` (database name hardcoded in `2.flyway-pipeline.toml`)
+- `build` → `db-autopilot-dev-[your-number]` (database name hardcoded in `2.flyway-pipeline.toml` and in GitHub-Flyway-CICD-Pipeline_xxx.yml as well)
+- `test` → `db-autopilot-uat-[your-number]` (database name hardcoded in `2.flyway-pipeline.toml` and in GitHub-Flyway-CICD-Pipeline_xxx.yml as well)
+- `prod` → `db-autopilot-prod-[your-number]` (database name hardcoded in `2.flyway-pipeline.toml` and in GitHub-Flyway-CICD-Pipeline_xxx.yml as well)
 
 **Same Flyway License:** All environments use the same Flyway Enterprise license for authentication.
 
@@ -305,7 +305,6 @@ After creating all environments and secrets, verify:
 1. **Go to Settings > Environments**
 2. **Confirm you see 3 environments**: `build`, `test`, `prod`
 3. **Click on each environment** and verify it has 6 secrets
-4. **Confirm `prod` environment** shows "Required reviewers: 1"
 
 **✅ Environment Setup Complete!** You're ready to configure the workflow files.
 
@@ -319,17 +318,17 @@ Your CI/CD pipeline uses the `2.flyway-pipeline.toml` configuration file instead
 
 ```toml
 [environments.Build]
-url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=AutoPilotBuild;..."
+url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=db-autopilot-dev-[your-number];..."
 user = "${env.TARGET_DATABASE_USERNAME}"
 password = "${env.TARGET_DATABASE_PASSWORD}"
 
 [environments.Test]
-url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=AutoPilotTest;..."
+url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=db-autopilot-uat-[your-number];..."
 user = "${env.TARGET_DATABASE_USERNAME}"
 password = "${env.TARGET_DATABASE_PASSWORD}"
 
 [environments.Prod]
-url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=AutoPilotProd;..."
+url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=db-autopilot-prod-[your-number];..."
 user = "${env.TARGET_DATABASE_USERNAME}"
 password = "${env.TARGET_DATABASE_PASSWORD}"
 ```
@@ -362,9 +361,9 @@ Ensure you have these three databases created on your Azure SQL Server:
 
 **Required Databases:**
 
-- `AutoPilotBuild` → Used for clean validation (gets wiped each run)
-- `AutoPilotTest` → Used for UAT testing
-- `AutoPilotProd` → Used for production deployment
+- `db-autopilot-dev-[your-number]` → Used for clean validation (gets wiped each run)
+- `db-autopilot-uat-[your-number]` → Used for UAT testing
+- `db-autopilot-prod-[your-number]` → Used for production deployment
 
 **Connection Details:**
 
@@ -377,7 +376,7 @@ Ensure you have these three databases created on your Azure SQL Server:
 ### 1. Trigger the Workflow
 
 1. **Return to the "Actions" tab** in GitHub
-2. **Select "GitHub-Flyway-AutoPilot-Pipeline-Windows"** workflow
+2. **Select "GitHub-Flyway-AutoPilot-Pipeline-xxx"** workflow (choose your system according to the runner!)
 3. **Click "Run workflow"** button
 4. **Confirm the branch** (usually `main`) and click "Run workflow"
 
@@ -389,7 +388,7 @@ The first stage performs clean validation:
 
 1. **Click on the workflow run** to monitor progress
 2. **Watch the "Deploy Build" job**:
-   - ✅ **Clean**: Wipes `AutoPilotBuild` database completely
+   - ✅ **Clean**: Wipes `db-autopilot-dev-[your-number]` database completely
    - ✅ **Migrate**: Applies all migrations V001-V005 from scratch
    - ✅ **Undo**: Tests rollback scripts for validation
    - ✅ **Artifact**: Publishes validated migration scripts
@@ -399,7 +398,7 @@ The first stage performs clean validation:
 ```
 ✅ Flyway CLI installed successfully
 ✅ Authenticated with Flyway Enterprise
-✅ Cleaned AutoPilotBuild database
+✅ Cleaned db-autopilot-dev-[your-number] database
 ✅ Migrated to version 005 (5 migrations applied)
 ✅ Undo scripts validated successfully
 ✅ Build artifact published: flyway-build-artifact-[run-number]
@@ -414,51 +413,25 @@ After build completes successfully, test stage begins automatically:
 1. **Watch the "Deploy Test" job**:
    - ✅ **Download**: Gets validated artifacts from build stage
    - ✅ **Reports**: Generates deployment preview reports
-   - ✅ **Migrate**: Deploys to `AutoPilotTest` database
+   - ✅ **Migrate**: Deploys to `db-autopilot-uat-[your-number]` database
 
-**Expected Test Output:**
+### 4. Production Process
 
-```
-✅ Downloaded build artifacts successfully
-✅ Connected to AutoPilotTest database
-✅ Check report generated successfully
-✅ Deployed V005 wishlist feature to Test environment
-✅ Test deployment completed successfully
-```
-
-### 4. Production Approval Process (Manual)
-
-After test deployment succeeds, production stage waits for approval:
-
-1. **Production deployment will pause** and show "Waiting for approval"
-2. **Check your email** for approval notification from GitHub
-3. **In GitHub, click "Review deployments"** button
-4. **Select "prod" environment** and click "Approve and deploy"
-
-**Expected Approval Flow:**
-
-```
-✅ Build Stage: Complete (AutoPilotBuild)
-✅ Test Stage: Complete (AutoPilotTest)
-⏳ Prod Stage: Waiting for approval...
-👥 Required Reviewers: [Your Name]
-🔒 Protection: Manual approval required
-```
+After test deployment succeeds, production stage will continue
 
 ### 5. Monitor Production Stage (After Approval)
 
-Once approved, production deployment begins:
+Once approved, production deployment begins automatically:
 
 1. **Watch the "Deploy Prod" job**:
    - ✅ **Reports**: Generates production deployment preview
-   - ✅ **Approval**: Interactive approval confirmation (if using self-hosted runner)
-   - ✅ **Deploy**: Applies V005 to `AutoPilotProd` database
+   - ✅ **Deploy**: Applies V005 to `db-autopilot-prod-[your-number]` database
 
 **Expected Production Output:**
 
 ```
-✅ Production approval granted by [approver-name]
-✅ Connected to AutoPilotProd database
+✅ Production approval granted by GitHub environment protection
+✅ Connected to db-autopilot-prod-[your-number] database
 ✅ V005 wishlist feature deployed to Production
 ✅ Production deployment completed successfully
 ✅ No drift detected across all environments
@@ -487,17 +460,17 @@ After successful completion of all three stages:
 **Expected Success Output:**
 
 ```
-✅ Build Environment (AutoPilotBuild):
+✅ Build Environment (db-autopilot-dev-[your-number]):
    - Database cleaned and rebuilt successfully
    - All migrations V001-V005 applied
    - Undo scripts validated
 
-✅ Test Environment (AutoPilotTest):
+✅ Test Environment (db-autopilot-uat-[your-number]):
    - V005 wishlist feature deployed successfully
    - Check reports generated
    - No drift detected
 
-✅ Prod Environment (AutoPilotProd):
+✅ Prod Environment (db-autopilot-prod-[your-number]):
    - Production approval granted
    - V005 wishlist feature deployed successfully
    - Production deployment completed
@@ -505,78 +478,191 @@ After successful completion of all three stages:
 
 ![Deployment Success](../../../assets/images/labs/lab6-deployment-success.png)
 
-### 2. Verify Wishlist Feature in Test Environment
+### 2. Download and Review Deployment Artifacts
 
-Connect to your `AutoPilotTest` database and verify the wishlist feature was deployed:
+After a successful pipeline run, GitHub Actions creates downloadable artifacts containing deployment reports and validated migration scripts:
+
+#### **Accessing Pipeline Artifacts**
+
+1. **Navigate to your workflow run** in the GitHub Actions tab
+2. **Scroll down to the "Artifacts" section** at the bottom of the workflow summary
+3. **You'll see multiple downloadable artifacts**:
+   - `flyway-build-artifact-[run-number]` - Validated migration scripts from build stage
+   - `flyway-reports-test` - Deployment reports from test environment
+   - `flyway-reports-prod` - Deployment reports from production environment
+
+![Pipeline Artifacts](../../../assets/images/labs/lab6-artifacts-overview.png)
+
+#### **Build Artifact Contents**
+
+The build artifact contains all validated migration files:
+
+1. **Click to download** `flyway-build-artifact-[run-number].zip`
+2. **Extract the archive** to review contents:
+   ```
+   flyway-build-artifact-123/
+   ├── migrations/
+   │   ├── V001__baseline.sql
+   │   ├── V002__Welcome.sql
+   │   ├── V003__Add_Customer_Loyalty.sql
+   │   ├── V004__Enhanced_Product_Catalog.sql
+   │   └── V005__Add_Customer_Wishlist_Feature.sql
+   ├── schema-model/
+   ├── Scripts/
+   ├── flyway.toml
+   └── Filter.scpf
+   ```
+
+#### **Deployment Report Contents**
+
+The report artifacts contain HTML deployment reports with detailed analysis:
+
+1. **Download** `flyway-reports-test.zip` and `flyway-reports-prod.zip`
+2. **Extract and open the HTML files** in your browser
+3. **Review the comprehensive deployment analysis**:
+   - Database schema changes detected
+   - Migration execution summary
+   - Drift analysis results
+   - Before/after schema comparison
+
+![Deployment Reports](../../../assets/images/labs/lab6-deployment-reports.png)
+
+#### **What the Reports Show You**
+
+**Test Environment Report (`db-autopilot-uat-[your-number]`):**
+
+- Changes made during V005 deployment
+- Objects created: CustomerWishlists, WishlistItems tables
+- Views created: CustomerWishlistAnalytics
+- No schema drift detected
+
+**Production Environment Report (`db-autopilot-prod-[your-number]`):**
+
+- Production deployment preview analysis
+- Comparison with test environment schema
+- Confirmation of successful wishlist feature deployment
+- Production schema state verification
+
+#### **Using Reports for Auditing**
+
+These artifacts provide valuable audit trails:
+
+- **Compliance**: Downloadable proof of what was deployed and when
+- **Troubleshooting**: Detailed logs if issues occur in environments
+- **Documentation**: Schema change history for future reference
+- **Validation**: Confirmation that environments are synchronized
+
+**💡 Pro Tip:** Save these artifacts for your deployment documentation and compliance records!
+
+### 4. Verify Wishlist Feature in Production Environment
+
+Connect to your `db-autopilot-prod-[your-number]` database and run the same verification:
 
 ```sql
--- Verify tables were created
-SELECT TABLE_NAME, TABLE_SCHEMA
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_NAME IN ('CustomerWishlists', 'WishlistItems')
-
--- Verify view was created
-SELECT TABLE_NAME, TABLE_TYPE
-FROM INFORMATION_SCHEMA.VIEWS
-WHERE TABLE_NAME = 'CustomerWishlistAnalytics'
-
--- Check migration history
-SELECT * FROM flyway_schema_history ORDER BY version_rank
-```
-
-**Expected Results:**
-
-```
-CustomerWishlists     Sales
-WishlistItems        Sales
-CustomerWishlistAnalytics  Sales
-
-Migration History:
-001 | baseline
-002 | Welcome
-003 | Add Customer Loyalty
-004 | Enhanced Product Catalog
-005 | Add Customer Wishlist Feature  ← Your new migration!
-```
-
-### 3. Verify Wishlist Feature in Production Environment
-
-Connect to your `AutoPilotProd` database and run the same verification:
-
-```sql
--- Test the wishlist analytics view in production
-SELECT
-    CompanyName,
-    WishlistName,
-    ItemCount,
-    TotalWishlistValue
-FROM Sales.CustomerWishlistAnalytics
-ORDER BY TotalWishlistValue DESC
 
 -- Verify production migration history matches test
 SELECT version, description, success
-FROM flyway_schema_history
+FROM [Customers].flyway_schema_history
 WHERE success = 1
-ORDER BY version_rank
+ORDER BY installed_rank
 ```
 
-### 4. Clean Build Database Verification
+### 5. Build Database Verification
 
-The `AutoPilotBuild` database should be empty after the build stage (as expected):
+The `db-autopilot-dev-[your-number]` database should contain the complete migrated schema after the build stage completes:
 
 ```sql
--- Build database should be clean (no application tables)
-SELECT COUNT(*) as TableCount
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA')
 
--- Only flyway_schema_history should remain
-SELECT TABLE_NAME
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA')
+-- Verify production migration history matches test
+SELECT version, description, success
+FROM [Customers].flyway_schema_history
+WHERE success = 1
+ORDER BY installed_rank
 ```
 
-**Expected Result:** Only `flyway_schema_history` table should exist (build database gets cleaned each run).
+**Expected Result:** The build database contains all application tables (Sales.Customers, Sales.Products, etc.) plus flyway_schema_history. The build stage cleans the database at the START, then rebuilds it completely to validate all migrations work from scratch.
+
+## Troubleshooting Common Issues
+
+### 1. V005 Migration Failures
+
+If your V005 wishlist migration fails during the CI/CD pipeline, try these solutions:
+
+#### **Problem: "Object already exists" errors**
+
+**Solution:** The V005 migration might conflict with existing objects from previous lab exercises.
+
+```sql
+-- Connect to your databases and check for conflicting objects
+SELECT name FROM sys.tables WHERE name LIKE '%Wishlist%'
+SELECT name FROM sys.views WHERE name LIKE '%Wishlist%'
+```
+
+**Quick Fix:** If V005 continues to fail and you want to proceed with the lab:
+
+1. **Delete the V005 migration files** from your `migrations` folder:
+
+   - Delete `V005__Add_Customer_Wishlist_Feature.sql`
+   - Delete `U005__UNDO-Add_Customer_Wishlist_Feature.sql` (if exists)
+
+2. **Commit the deletion** to your repository:
+
+   ```bash
+   git add migrations/
+   git commit -m "Remove V005 migration for CI/CD demo"
+   git push
+   ```
+
+3. **Re-run the pipeline** - it will now deploy V001-V004 successfully
+
+#### **Problem: Clean provisioner errors**
+
+**Error Message:** `ERROR: Clean is disabled - unable to configure clean provisioner. Please configure a provisioner for the Test environment`
+
+**Solution:** Ensure your `2.flyway-pipeline.toml` has the correct provisioner configuration:
+
+```toml
+[environments.Build]
+provisioner = "clean"  # Build environment needs this
+
+[environments.Test]
+provisioner = "clean"  # Test environment also needs this to avoid failures
+
+[environments.Prod]
+# No provisioner for Prod - production safety
+```
+
+**Important:** Both Build and Test environments need `provisioner = "clean"` to prevent pipeline failures. Only Production should have no provisioner for safety.
+
+### 2. Authentication Failures
+
+#### **Problem: "Flyway license not found"**
+
+**Solution:**
+
+1. Verify your PAT is correctly set in GitHub secrets
+2. Check that your license is allocated in the Redgate Portal
+3. Ensure `FLYWAY_EMAIL` matches your Redgate account exactly
+
+### 3. Database Connection Issues
+
+#### **Problem: "Cannot connect to database"**
+
+**Solution:**
+
+1. Verify database names are updated with your assigned numbers
+2. Check that all three databases exist on the SQL Server
+3. Confirm your credentials work with Azure SQL Server
+
+### 4. Runner Issues
+
+#### **Problem: "No runners available"**
+
+**Solution:**
+
+1. Ensure your self-hosted runner is online and idle
+2. Check that the runner service is running
+3. Verify the runner has necessary permissions
 
 ## Key Concepts Learned
 

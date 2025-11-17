@@ -57,16 +57,15 @@ env:
 ### DO NOT EDIT BELOW THIS LINE - All variables set in the above section will be consumed by the jobs below and therefore do not require any updates to function ###
 
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    name: Deploy Development
-    # The type of runner that the job will run on
-    runs-on: "self-hosted" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
-    environment: "development"
+    name: Deploy Build
+    runs-on: self-hosted
+    environment: "build"
     env:
-      stage: "Development"
-      displayName: "Development"
-      DATABASE_NAME: "db-autopilot-dev-001"
+      stage: "Build"
+      displayName: "Build"
+      DATABASE_NAME: "db-autopilot-dev-xxx"
+      ENVIRONMENT: "Build" # This variable refers to the environment name present in the Flyway Projects TOML file.
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
@@ -86,57 +85,53 @@ jobs:
         if: ${{ env.EXECUTE_BUILD == 'true' && env.FLYWAY_AUTH_DISABLED != 'true' && success() }}
         run: |
           flyway auth -IAgreeToTheEula -email="${{ env.FLYWAY_EMAIL }}" -token="${{ env.FLYWAY_TOKEN }}"
-            # Step 2 - Ensure the Build Database is cleaned of all objects, meaning the build starts from scratch
+      # Step 2 - Ensure the Build Database is cleaned of all objects, meaning the build starts from scratch
       - name: Clean Build DB
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway info clean info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}/flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" -cleanDisabled='false' "-environments.${{ env.ENVIRONMENT }}.provisioner=clean" ${{ env.CUSTOM_PARAMS }}
+          flyway info clean info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}/2.flyway-pipeline.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" -cleanDisabled=false ${{ env.CUSTOM_PARAMS }}
       # Step 3 - Migrate all scripts from the migration folder, to verify they can be deployed against an empty database. This is the quickest way to get feedback about problematic scripts
       - name: Migrate Build DB
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}/flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" -cleanDisabled='false' -baselineOnMigrate="true" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
+          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}/2.flyway-pipeline.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" -cleanDisabled=false -baselineOnMigrate=true ${{ env.CUSTOM_PARAMS }}
       # Step 4 (Optional) - Undo all relevant migrations using corresponding rollback script, to validate they can be run. This helps to reduce the chance the script will fail during a real life rollback scenario
-      - name: undo Build DB
+      - name: Undo Build DB
         if: ${{ env.EXECUTE_BUILD == 'true' && success() }}
         run: |
-          flyway info undo info -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ GITHUB.WORKSPACE }}/flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" -baselineOnMigrate="true" -cleanDisabled='false' -target="${{ env.FIRST_UNDO_SCRIPT }}" ${{ env.CUSTOM_PARAMS }}
-      # GitHub - After migration scripts are validated, publish them as an artifact
+          flyway info undo info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}/2.flyway-pipeline.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" -baselineOnMigrate=true -cleanDisabled=false -target="${{ env.FIRST_UNDO_SCRIPT }}" ${{ env.CUSTOM_PARAMS }}
+      # Linux - After migration scripts are validated, publish them as an artifact
       - name: Publish Validated Migration Scripts as Artifact
         if: ${{ env.publishArtifacts == 'true' && success() }}
         uses: actions/upload-artifact@v4
         with:
           name: flyway-build-artifact-${{ github.run_number }}
           path: |
-            !${{ GITHUB.WORKSPACE }}/flyway-*/**/*
-            !${{ GITHUB.WORKSPACE }}/.git/**/*
-            !${{ GITHUB.WORKSPACE }}/.git*/**/*
-            ${{ GITHUB.WORKSPACE }}/**/schema-model/**/*
-            ${{ GITHUB.WORKSPACE }}/**/migrations/**/*
-            ${{ GITHUB.WORKSPACE }}/**/Scripts/**/*
-            ${{ GITHUB.WORKSPACE }}/**/backups/**/*
-            ${{ GITHUB.WORKSPACE }}/**/flyway.toml
-            ${{ GITHUB.WORKSPACE }}/**/Filter.scpf
+            ${{ GITHUB.WORKSPACE }}/schema-model/**
+            ${{ GITHUB.WORKSPACE }}/migrations/**
+            ${{ GITHUB.WORKSPACE }}/Scripts/**
+            ${{ GITHUB.WORKSPACE }}/backups/**
+            ${{ GITHUB.WORKSPACE }}/flyway.toml
+            ${{ GITHUB.WORKSPACE }}/Filter.scpf
 
-  uat:
-    name: Deploy UAT
-    # The type of runner that the job will run on
-    runs-on: "self-hosted" # Options - self-hosted/ubuntu-latest/windows-latest (See here for more details on GitHub hosted runners - https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners)
+  test:
+    name: Deploy Test
+    runs-on: self-hosted
+    environment: "test"
     if: ${{ true }} #Set this variable to false to temporarily disable the job
     needs: build
     env:
-      stage: "UAT"
-      DATABASE_NAME: "db-autopilot-uat-001"
-      ENVIRONMENT: "uat" # Refers to the environment in the Flyway Project TOML file.
+      stage: "Test"
+      DATABASE_NAME: "db-autopilot-uat-xxx"
+      ENVIRONMENT: "Test" # Refers to the environment in the Flyway Project TOML file.
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
-      REPORT_ENVIRONMENT: "development" # Use development as comparison base
+      REPORT_ENVIRONMENT: "Build" # Use Build as comparison base
       REPORT_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}" # Optional - Change to a different secret if the connection details for the report database differs from the target
       REPORT_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}" # Optional - Change to a different secret if the connection details for the report database differs from the target
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
       generateReport: "true" # Turn to false to skip the CHECK report stage tasks
       FLYWAY_CHECK_DRIFT_ON_MIGRATE: "true" # Turn to false to skip the Drift Report upload to Flyway Pipelines (If enabled)
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/download-artifact@v4
@@ -161,34 +156,35 @@ jobs:
         if: ${{ env.generateReport == 'true' && success() }}
         run: |
           mkdir -p reports
-          flyway check -dryrun -changes -drift -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ GITHUB.WORKSPACE }}/flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" "-check.buildEnvironment=${{ env.REPORT_ENVIRONMENT }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" "-reportFilename=${{ GITHUB.WORKSPACE }}/reports/${{ env.DATABASE_NAME }}-Run-${{ GITHUB.RUN_ID }}-${{ env.ENVIRONMENT }}-Check-Report.html" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
+          flyway check -dryrun -changes -drift -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}/2.flyway-pipeline.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" -check.buildEnvironment="${{ env.REPORT_ENVIRONMENT }}" -environments.${{ env.REPORT_ENVIRONMENT }}.user="${{ env.REPORT_DATABASE_USERNAME }}" -environments.${{ env.REPORT_ENVIRONMENT }}.password="${{ env.REPORT_DATABASE_PASSWORD }}" -reportFilename="${{ GITHUB.WORKSPACE }}/reports/${{ env.DATABASE_NAME }}-Run-${{ GITHUB.RUN_ID }}-${{ env.ENVIRONMENT }}-Check-Report.html" ${{ env.CUSTOM_PARAMS }}
         continue-on-error: true
       # Step 3 - Publish Check Report
       - name: Publish Check Report as Artifact
         if: ${{ env.generateReport == 'true' && success() }}
         uses: actions/upload-artifact@v4
         with:
-          name: flyway-reports-uat
+          name: flyway-reports-test
           path: ${{ GITHUB.WORKSPACE }}/reports/${{ env.DATABASE_NAME }}-Run-${{ GITHUB.RUN_ID }}-${{ env.ENVIRONMENT }}-Check-Report.html
       # Step 4 - Deploy pending migrations to target database
-      - name: Migrate UAT DB
+      - name: Migrate Test DB
         if: success()
         run: |
-          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate="true" -configFiles="${{ GITHUB.WORKSPACE }}/flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
+          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}/2.flyway-pipeline.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" ${{ env.CUSTOM_PARAMS }}
 
-  production:
-    name: Deploy Production
+  prod:
+    name: Deploy Prod
     # The type of runner that the job will run on
-    runs-on: "self-hosted" # Production requires self-hosted runner for interactive approval
+    runs-on: "self-hosted" # Production requires self-hosted runner
+    environment: "prod"
     if: ${{ true }} #Set this variable to false to temporarily disable the job
-    needs: uat
+    needs: test
     env:
-      stage: "Production"
-      DATABASE_NAME: "db-autopilot-prod-001"
-      ENVIRONMENT: "production" # Refers to the environment in the Flyway Project TOML file.
+      stage: "Prod"
+      DATABASE_NAME: "db-autopilot-prod-xxx"
+      ENVIRONMENT: "Prod" # Refers to the environment in the Flyway Project TOML file.
       TARGET_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}"
       TARGET_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}"
-      REPORT_ENVIRONMENT: "uat" # Use UAT as comparison base for production
+      REPORT_ENVIRONMENT: "Test" # Use Test as comparison base for production
       REPORT_DATABASE_USERNAME: "${{ secrets.TARGET_DATABASE_USERNAME }}" # Optional - Change to a different secret if the connection details for the report database differs from the target
       REPORT_DATABASE_PASSWORD: "${{ secrets.TARGET_DATABASE_PASSWORD }}" # Optional - Change to a different secret if the connection details for the report database differs from the target
       CUSTOM_PARAMS: "${{ secrets.CUSTOM_PARAMS }}" # Secure method of adding custom Flyway Parameters (Example -X for debug)
@@ -219,50 +215,18 @@ jobs:
         if: ${{ env.generateReport == 'true' && success() }}
         run: |
           mkdir -p reports
-          flyway check -dryrun -changes -drift -environment="${{ env.ENVIRONMENT }}" -user=${{ env.TARGET_DATABASE_USERNAME }} -password=${{ env.TARGET_DATABASE_PASSWORD }} -configFiles="${{ GITHUB.WORKSPACE }}/flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" "-check.buildEnvironment=${{ env.REPORT_ENVIRONMENT }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.user=${{ env.REPORT_DATABASE_USERNAME }}" "-environments.${{ env.REPORT_ENVIRONMENT }}.password=${{ env.REPORT_DATABASE_PASSWORD }}" "-reportFilename=${{ GITHUB.WORKSPACE }}/reports/${{ env.DATABASE_NAME }}-Run-${{ GITHUB.RUN_ID }}-${{ env.ENVIRONMENT }}-Check-Report.html" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
+          flyway check -dryrun -changes -drift -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -configFiles="${{ GITHUB.WORKSPACE }}/2.flyway-pipeline.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" -check.buildEnvironment="${{ env.REPORT_ENVIRONMENT }}" -environments.${{ env.REPORT_ENVIRONMENT }}.user="${{ env.REPORT_DATABASE_USERNAME }}" -environments.${{ env.REPORT_ENVIRONMENT }}.password="${{ env.REPORT_DATABASE_PASSWORD }}" -reportFilename="${{ GITHUB.WORKSPACE }}/reports/${{ env.DATABASE_NAME }}-Run-${{ GITHUB.RUN_ID }}-${{ env.ENVIRONMENT }}-Check-Report.html" ${{ env.CUSTOM_PARAMS }}
         continue-on-error: true
       # Step 3 - Publish Check Report
       - name: Publish Production Check Report as Artifact
         if: ${{ env.generateReport == 'true' && success() }}
         uses: actions/upload-artifact@v4
         with:
-          name: flyway-reports-production
+          name: flyway-reports-prod
           path: ${{ GITHUB.WORKSPACE }}/reports/${{ env.DATABASE_NAME }}-Run-${{ GITHUB.RUN_ID }}-${{ env.ENVIRONMENT }}-Check-Report.html
-      # Step 4 - Interactive Approval for Production Deployment
-      - name: Production Deployment Approval
-        run: |
-          echo "=============================================="
-          echo "🚨 PRODUCTION DEPLOYMENT APPROVAL REQUIRED 🚨"
-          echo "=============================================="
-          echo ""
-          echo "Environment: ${{ env.ENVIRONMENT }}"
-          echo "Database: ${{ env.DATABASE_NAME }}"
-          echo "Run ID: ${{ github.run_id }}"
-          echo "Triggered by: ${{ github.actor }}"
-          echo ""
-          echo "⚠️  Check the reports artifact for migration details before proceeding."
-          echo ""
-          echo "🔥 WARNING: This will deploy database changes to PRODUCTION!"
-          echo ""
-          while true; do
-              read -p "Do you want to proceed with PRODUCTION deployment? (yes/no): " response
-              case $response in
-                  [Yy][Ee][Ss]|[Yy])
-                      echo "✅ Production deployment approved!"
-                      break
-                      ;;
-                  [Nn][Oo]|[Nn])
-                      echo "❌ Production deployment cancelled by user."
-                      exit 1
-                      ;;
-                  *)
-                      echo "Please enter 'yes' or 'no'"
-                      ;;
-              esac
-          done
-      # Step 5 - Deploy pending migrations to production database
+      # Step 4 - Deploy pending migrations to production database
       - name: Migrate Production DB
         if: success()
         run: |
-          echo "Deploying to Production Database: ${{ env.DATABASE_NAME }}"
-          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate="true" -configFiles="${{ GITHUB.WORKSPACE }}/flyway.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" "-publishResult=${{ env.FLYWAY_PUBLISH_RESULT }}" "-flywayServicePublish.publishReport=${{ env.FLYWAY_PUBLISH_RESULT }}" "-reportEnabled=${{ env.FLYWAY_PUBLISH_RESULT }}" ${{ env.CUSTOM_PARAMS }}
+          echo Deploying to Production Database: ${{ env.DATABASE_NAME }}
+          flyway info migrate info -environment="${{ env.ENVIRONMENT }}" -user="${{ env.TARGET_DATABASE_USERNAME }}" -password="${{ env.TARGET_DATABASE_PASSWORD }}" -baselineOnMigrate=true -configFiles="${{ GITHUB.WORKSPACE }}/2.flyway-pipeline.toml" -locations="filesystem:${{ GITHUB.WORKSPACE }}/migrations" ${{ env.CUSTOM_PARAMS }}
