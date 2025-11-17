@@ -32,7 +32,8 @@ Now that you've committed your V005 wishlist migration scripts to your GitHub re
 - GitHub repository with your Flyway project
 - Access to create self-hosted runners in GitHub
 - Redgate Portal account with Flyway Enterprise license
-- UAT database (`db-autopilot-uat-001`) configured and accessible
+- Build, Test, and Production databases configured and accessible
+- `2.flyway-pipeline.toml` configuration file ready for CI/CD
 
 ## Step 1: Navigate to GitHub Actions
 
@@ -52,9 +53,85 @@ Your repository should already contain pre-configured workflow files for differe
    - `GitHub-Flyway-CICD-Pipeline_Linux.yml` - For Linux self-hosted runners
    - `GitHub-Flyway-CICD-Pipeline_macOS.yml` - For macOS self-hosted runners
 
-**Important:** Do not run any workflows yet - we need to configure the runner and authentication first.
+**Important:** Do not run any workflows yet - we need to configure the runner, authentication, and update database names first.
 
-## Step 2: Configuring Your Self-Hosted Runner
+## Step 2: Update Database Names in Configuration Files
+
+### 1. Update the CI/CD Configuration File
+
+Before setting up environments, you need to update the database names with your assigned numbers:
+
+1. **Open `2.flyway-pipeline.toml`** in your repository
+2. **Replace `xxx` with your assigned numbers** in the database names:
+
+**Replace:**
+
+```toml
+[environments.Build]
+url = "...databaseName=db-autopilot-build-xxx;..."
+
+[environments.Test]
+url = "...databaseName=db-autopilot-uat-xxx;..."
+
+[environments.Prod]
+url = "...databaseName=db-autopilot-prod-xxx;..."
+```
+
+**With your assigned numbers (example with 001):**
+
+```toml
+[environments.Build]
+url = "...databaseName=db-autopilot-build-001;..."
+
+[environments.Test]
+url = "...databaseName=db-autopilot-uat-001;..."
+
+[environments.Prod]
+url = "...databaseName=db-autopilot-prod-001;..."
+```
+
+### 2. Update the Workflow File
+
+1. **Open `.github/workflows/GitHub-Flyway-CICD-Pipeline_Windows.yml`**
+2. **Replace `xxx` with your assigned numbers** in the `DATABASE_NAME` variables:
+
+**Replace:**
+
+```yaml
+# Build job
+DATABASE_NAME: "db-autopilot-build-xxx"
+
+# Test job
+DATABASE_NAME: "db-autopilot-uat-xxx"
+
+# Prod job
+DATABASE_NAME: "db-autopilot-prod-xxx"
+```
+
+**With your assigned numbers (example with 001):**
+
+```yaml
+# Build job
+DATABASE_NAME: "db-autopilot-build-001"
+
+# Test job
+DATABASE_NAME: "db-autopilot-uat-001"
+
+# Prod job
+DATABASE_NAME: "db-autopilot-prod-001"
+```
+
+### 3. Verify Your Database Access
+
+Make sure you have access to these three databases on the SQL Server:
+
+- `db-autopilot-build-[your-number]`
+- `db-autopilot-uat-[your-number]`
+- `db-autopilot-prod-[your-number]`
+
+**Important:** Save and commit these changes before proceeding to environment setup.
+
+## Step 3: Configuring Your Self-Hosted Runner
 
 ### 1. Add a Self-Hosted Runner
 
@@ -82,7 +159,7 @@ Your repository should already contain pre-configured workflow files for differe
 
 **The self-hosted runner will execute all Flyway commands in your CI/CD pipeline.**
 
-## Step 3: Adding Personal Access Token (PAT)
+## Step 4: Adding Personal Access Token (PAT)
 
 ### 1. Create a Personal Access Token
 
@@ -119,269 +196,318 @@ Secret Name: FLYWAY_TOKEN
 Value: [your-personal-access-token-from-step-1]
 ```
 
+## Step 5: Creating GitHub Environments with Secrets
+
+### 1. Understanding the CI/CD Environment Structure
+
+Your pipeline uses three distinct GitHub environments, each requiring their own secrets configuration:
+
+**Environment Flow:**
+
+```
+Build Environment    → Clean validation & artifact creation
+         ↓
+Test Environment     → Automated UAT deployment
+         ↓ (Manual Approval Gate)
+Prod Environment     → Production deployment
+```
+
+**Database Mapping (from `2.flyway-pipeline.toml`):**
+
+- **Build Environment** → `AutoPilotBuild` database
+- **Test Environment** → `AutoPilotTest` database
+- **Prod Environment** → `AutoPilotProd` database
+
+### 2. Create GitHub Environments
+
+1. **In your GitHub repository, go to Settings**
+2. **Click "Environments"** in the left sidebar
+3. **Create each environment by clicking "New environment"**:
+
+#### Environment 1: build
+
+1. **Enter environment name**: `build`
+2. **Click "Configure environment"**
+3. **No protection rules needed** (automatic execution)
+4. **Click "Save"**
+
+#### Environment 2: test
+
+1. **Enter environment name**: `test`
+2. **Click "Configure environment"**
+3. **No protection rules needed** (automatic execution)
+4. **Click "Save"**
+
+#### Environment 3: prod
+
+1. **Enter environment name**: `prod`
+2. **Click "Configure environment"**
+3. **Check "Required reviewers"**
+4. **Add yourself** as a required reviewer
+5. **Set "Number of required reviewers"** to 1 (Optional!)
+6. **Click "Save protection rules"**
+
 ![GitHub Secrets](../../../assets/images/labs/lab6-cicd_4.png)
 
-## Step 4: Configuring Database Environment Secrets
+### 3. Add Secrets to Each Environment
 
-### 1. Add Database Connection Secrets
+**You must add the SAME secrets to ALL three environments.** Each environment needs these secrets:
 
-For secure Azure SQL Database connections, add these **required** repository secrets:
-
-**Azure SQL Database Connection Secrets:**
+#### Required Secrets for All Environments:
 
 ```
-Secret Name: AZURE_SQL_SERVER
-Value: [your-azure-sql-server-name] (without .database.windows.net)
-
-Secret Name: AZURE_SQL_USER
-Value: [your-azure-sql-username]
-
-Secret Name: AZURE_SQL_PASSWORD
-Value: [your-azure-sql-password]
-
-Secret Name: FLYWAY_DEV_DATABASE
-Value: db-autopilot-dev-001
-
-Secret Name: FLYWAY_SHADOW_DATABASE
-Value: db-autopilot-shadow-001
-
-Secret Name: FLYWAY_UAT_DATABASE
-Value: db-autopilot-uat-001
-
-Secret Name: FLYWAY_PROD_DATABASE
-Value: db-autopilot-prod-001
-
-Secret Name: CUSTOM_PARAMS
-Value: -X (Optional - enables debug mode)
+SECRET NAME                    VALUE
+TARGET_DATABASE_USERNAME    → [your-azure-sql-username]
+TARGET_DATABASE_PASSWORD    → [your-azure-sql-password]
+FLYWAY_EMAIL                → [your-redgate-account-email]
+FLYWAY_TOKEN                → [your-personal-access-token]
+FLYWAY_CLI_INSTALL          → true
+CUSTOM_PARAMS               → -X (optional - debug mode)
 ```
 
-### 2. Understanding Secret Usage
+#### How to Add Secrets to Each Environment:
 
-**Secret Descriptions:**
+**For `build` environment:**
 
-- **AZURE_SQL_SERVER**: Your Azure SQL Server hostname (e.g., `sqlbits` for `sqlbits.database.windows.net`)
-- **AZURE_SQL_USER/PASSWORD**: Azure SQL authentication credentials
-- **FLYWAY\_\*\_DATABASE**: Database names for each environment (DEV, Shadow, UAT, Production)
-- **CUSTOM_PARAMS**: Additional Flyway parameters (e.g., `-X` for debug mode)
-- **FLYWAY_CLI_INSTALL**: Set to `false` Set to true to enable a Flyway CLI validation on the runner, which will validate Flyway is installed and if not will download and install to the desired version
-- **FLYWAY_AUTH_DISABLED**: Set to `false` This is an optional variable that will disable the Flyway Authentication step if set to true. This is valuable for scenarios where offline permit activation is utilized, which results in the Auth variable then becoming unnecessary.
+1. **Go to Settings > Environments > build**
+2. **Click "Add Secret"** for each secret above
+3. **Enter the secret name and value**
+4. **Click "Add secret"**
 
-### 3. Environment Flow in CI/CD
+**For `test` environment:**
 
-Your pipeline will deploy through these environments in sequence:
+1. **Go to Settings > Environments > test**
+2. **Click "Add Secret"** for each secret above
+3. **Enter the same values as build environment**
+4. **Click "Add secret"**
 
+**For `prod` environment:**
+
+1. **Go to Settings > Environments > prod**
+2. **Click "Add Secret"** for each secret above
+3. **Enter the same values as other environments**
+4. **Click "Add secret"**
+
+### 4. Why Each Environment Needs the Same Secrets
+
+**Same Database Credentials:** All environments connect to the same Azure SQL Server, just different databases:
+
+- `build` → `AutoPilotBuild` (database name hardcoded in `2.flyway-pipeline.toml`)
+- `test` → `AutoPilotTest` (database name hardcoded in `2.flyway-pipeline.toml`)
+- `prod` → `AutoPilotProd` (database name hardcoded in `2.flyway-pipeline.toml`)
+
+**Same Flyway License:** All environments use the same Flyway Enterprise license for authentication.
+
+### 5. Verify Environment and Secret Setup
+
+After creating all environments and secrets, verify:
+
+1. **Go to Settings > Environments**
+2. **Confirm you see 3 environments**: `build`, `test`, `prod`
+3. **Click on each environment** and verify it has 6 secrets
+4. **Confirm `prod` environment** shows "Required reviewers: 1"
+
+**✅ Environment Setup Complete!** You're ready to configure the workflow files.
+
+## Step 6: Verify Workflow Configuration
+
+### 1. Check Your Pipeline Configuration File
+
+Your CI/CD pipeline uses the `2.flyway-pipeline.toml` configuration file instead of the standard `flyway.toml`. This file contains the environment-specific database connections:
+
+**Key Configuration in `2.flyway-pipeline.toml`:**
+
+```toml
+[environments.Build]
+url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=AutoPilotBuild;..."
+user = "${env.TARGET_DATABASE_USERNAME}"
+password = "${env.TARGET_DATABASE_PASSWORD}"
+
+[environments.Test]
+url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=AutoPilotTest;..."
+user = "${env.TARGET_DATABASE_USERNAME}"
+password = "${env.TARGET_DATABASE_PASSWORD}"
+
+[environments.Prod]
+url = "jdbc:sqlserver://sqlbits.database.windows.net:1433;databaseName=AutoPilotProd;..."
+user = "${env.TARGET_DATABASE_USERNAME}"
+password = "${env.TARGET_DATABASE_PASSWORD}"
 ```
-Development (dev) ← Source Control
-         ↓
-Shadow Database (validation) ← Clean deployment test
-         ↓
-UAT (uat) ← User Acceptance Testing
-         ↓ (Manual Approval Required)
-Production (prod) ← Live Production Database
-```
 
-**Deployment Strategy:**
+### 2. Workflow File Configuration
 
-- **Development**: Where developers make changes
-- **Shadow**: Clean database for validation testing
-- **UAT**: User acceptance testing environment (automated deployment)
-- **Production**: Live production database (**manual approval required**)
+The GitHub Actions workflow is pre-configured to:
 
-**Production Deployment Options:**
-
-1. **Same Workflow with Approval Gates** (Recommended):
-
-   - Use environments in GitHub with protection rules
-   - Require manual approval before production deployment
-   - Single workflow handles both UAT and Production
-
-2. **Separate Production Workflow**:
-
-   - Create dedicated `production-deployment.yml` workflow
-   - Triggered manually after UAT validation
-   - Allows different approval processes and timing
-
-3. **Tag-Based Production Deployment**:
-   - UAT deployment from `main` branch
-   - Production deployment only when creating release tags
-   - Provides clear production release versioning
-
-## Step 5: Editing the Workflow Files
-
-### 1. Select the Appropriate Workflow
-
-1. **Open the `.github/workflows` folder**
-2. **Select the YAML file** matching your self-hosted runner OS:
-   - Windows: `GitHub-Flyway-CICD-Pipeline_Windows.yml`
-   - Linux: `GitHub-Flyway-CICD-Pipeline_Linux.yml`
-   - MacOS: `GitHub-Flyway-CICD-Pipeline_macOS.yml`
-
-### 2. Review Workflow Configuration
-
-The workflows are pre-configured to:
-
-- **Read database connections** from your `flyway.toml` file
-- **Use repository secrets** for authentication and passwords
-- **Deploy to environments** defined in your Flyway project
+- **Use `2.flyway-pipeline.toml`** for database connections
+- **Reference the three environments**: Build, Test, Prod
+- **Execute in sequence**: Build → Test → Prod
+- **Use environment secrets** for authentication
 
 **Key Workflow Features:**
 
 ```yaml
-# Authenticates with Redgate using PAT
-- name: Authenticate Flyway
-  run: flyway auth -email ${{ secrets.FLYWAY_EMAIL }} -token ${{ secrets.FLYWAY_TOKEN }}
+# Uses the CI/CD specific configuration file
+configFiles: "${{ GITHUB.WORKSPACE }}/2.flyway-pipeline.toml"
 
-# Deploy to UAT automatically
-- name: Deploy to UAT
-  run: flyway migrate -environment=uat
+# Authenticates with Redgate using environment secrets
+flyway auth -email "${{ secrets.FLYWAY_EMAIL }}" -token "${{ secrets.FLYWAY_TOKEN }}"
 
-# Deploy to Production with manual approval
-- name: Deploy to Production
-  run: flyway migrate -environment=prod
-  environment: production # Requires GitHub environment with approval rules
+# Deploys to environments in sequence
+Build Environment → Test Environment → Prod Environment (with approval)
 ```
 
-**Production Deployment Best Practices:**
+### 3. Database Requirements
 
-1. **GitHub Environments**: Set up a "production" environment in GitHub Settings
-2. **Approval Rules**: Require manual approval from designated reviewers
-3. **Protection Rules**: Limit who can approve production deployments
-4. **Deployment Windows**: Optionally restrict deployment times (e.g., business hours only)
+Ensure you have these three databases created on your Azure SQL Server:
 
-### 3. Verify Environment Configuration
+**Required Databases:**
 
-1. **In Flyway Desktop, go to the "Environments" tab** in the left navigation
-2. **Review your 4-environment setup**:
-   - Development Database (`db-autopilot-dev-001`)
-   - Shadow Database (`db-autopilot-shadow-001`)
-   - UAT Database (`db-autopilot-uat-001`)
-   - Production Database (`db-autopilot-prod-001`)
-3. **Verify each environment connection** is properly configured
-4. **Test connections** to ensure database accessibility for CI/CD deployment
+- `AutoPilotBuild` → Used for clean validation (gets wiped each run)
+- `AutoPilotTest` → Used for UAT testing
+- `AutoPilotProd` → Used for production deployment
 
-## Step 5.5: Setting Up Production Approval Gates (Recommended)
+**Connection Details:**
 
-Before running workflows, let's set up GitHub Environments with approval gates for safe production deployments:
+- **Server**: `sqlbits.database.windows.net` (update in `2.flyway-pipeline.toml` if different)
+- **Authentication**: Same username/password for all databases (stored in environment secrets)
+- **Encryption**: All connections use SSL/TLS encryption
 
-### 1. Create GitHub Environment
-
-1. **In your GitHub repository, go to Settings**
-2. **Click "Environments"** in the left sidebar
-3. **Click "New environment"** button
-4. **Enter environment name**: `production`
-5. **Click "Configure environment"**
-
-### 2. Configure Protection Rules
-
-**Environment Protection Rules:**
-
-1. **Check "Required reviewers"**
-2. **Add yourself** (and team members) as required reviewers
-3. **Set "Number of required reviewers"** to at least 1
-4. **Optionally check "Prevent self-review"** for additional safety
-5. **Click "Save protection rules"**
-
-### 3. Optional: Deployment Branch Protection
-
-1. **Under "Deployment branches"** select "Protected branches only"
-2. **This ensures only main/master branch** can deploy to production
-3. **Prevents accidental production deployment** from feature branches
-
-### 4. Verify Environment Setup
-
-1. **Return to your repository's main page**
-2. **Go to "Actions" tab**
-3. **Your production environment** should now appear in environment list
-4. **Production deployments will now require approval** before execution
-
-**This setup ensures that UAT deploys automatically, but production requires manual approval - perfect for database safety!**
-
-## Step 6: Running the Workflow
+## Step 7: Running the CI/CD Pipeline
 
 ### 1. Trigger the Workflow
 
 1. **Return to the "Actions" tab** in GitHub
-2. **Select the appropriate workflow** (e.g., `windows.yml`)
+2. **Select "GitHub-Flyway-AutoPilot-Pipeline-Windows"** workflow
 3. **Click "Run workflow"** button
-4. **Confirm the branch** and click "Run workflow"
+4. **Confirm the branch** (usually `main`) and click "Run workflow"
 
 ![Trigger Workflow](../../../assets/images/labs/lab6-cicd_5.png)
 
-### 2. Monitor UAT Deployment
+### 2. Monitor Build Stage (Automatic)
+
+The first stage performs clean validation:
 
 1. **Click on the workflow run** to monitor progress
-2. **Watch for "Queued" status** (normal if runner is busy)
-3. **UAT deployment will run automatically** without approval
-4. **Wait for UAT deployment to complete** successfully
+2. **Watch the "Deploy Build" job**:
+   - ✅ **Clean**: Wipes `AutoPilotBuild` database completely
+   - ✅ **Migrate**: Applies all migrations V001-V005 from scratch
+   - ✅ **Undo**: Tests rollback scripts for validation
+   - ✅ **Artifact**: Publishes validated migration scripts
 
-![Workflow Queued](../../../assets/images/labs/lab6-cicd_6.png)
+**Expected Build Output:**
 
-### 3. Production Approval Process
+```
+✅ Flyway CLI installed successfully
+✅ Authenticated with Flyway Enterprise
+✅ Cleaned AutoPilotBuild database
+✅ Migrated to version 005 (5 migrations applied)
+✅ Undo scripts validated successfully
+✅ Build artifact published: flyway-build-artifact-[run-number]
+```
 
-After UAT deployment succeeds:
+![Workflow Running](../../../assets/images/labs/lab6-cicd_7.png)
 
-1. **Production deployment will pause** and wait for approval
-2. **You'll see "Waiting for approval" status** in the workflow
-3. **Check your email** for approval notification from GitHub
-4. **Click "Review deployments"** button when ready for production
-5. **Select "production" environment** and click "Approve and deploy"
+### 3. Monitor Test Stage (Automatic)
+
+After build completes successfully, test stage begins automatically:
+
+1. **Watch the "Deploy Test" job**:
+   - ✅ **Download**: Gets validated artifacts from build stage
+   - ✅ **Reports**: Generates deployment preview reports
+   - ✅ **Migrate**: Deploys to `AutoPilotTest` database
+
+**Expected Test Output:**
+
+```
+✅ Downloaded build artifacts successfully
+✅ Connected to AutoPilotTest database
+✅ Check report generated successfully
+✅ Deployed V005 wishlist feature to Test environment
+✅ Test deployment completed successfully
+```
+
+### 4. Production Approval Process (Manual)
+
+After test deployment succeeds, production stage waits for approval:
+
+1. **Production deployment will pause** and show "Waiting for approval"
+2. **Check your email** for approval notification from GitHub
+3. **In GitHub, click "Review deployments"** button
+4. **Select "prod" environment** and click "Approve and deploy"
 
 **Expected Approval Flow:**
 
 ```
-✅ UAT Deployment: Complete
-⏳ Production Deployment: Waiting for approval
+✅ Build Stage: Complete (AutoPilotBuild)
+✅ Test Stage: Complete (AutoPilotTest)
+⏳ Prod Stage: Waiting for approval...
 👥 Required Reviewers: [Your Name]
 🔒 Protection: Manual approval required
 ```
 
-### 3. View Deployment Progress
+### 5. Monitor Production Stage (After Approval)
 
-1. **Click on "Deploy Build"** job to see detailed logs
-2. **Monitor Flyway commands** being executed
-3. **Watch UAT deployment complete** first
-4. **Production deployment starts after approval**
+Once approved, production deployment begins:
 
-![Workflow Running](../../../assets/images/labs/lab6-cicd_7.png)
+1. **Watch the "Deploy Prod" job**:
+   - ✅ **Reports**: Generates production deployment preview
+   - ✅ **Approval**: Interactive approval confirmation (if using self-hosted runner)
+   - ✅ **Deploy**: Applies V005 to `AutoPilotProd` database
 
-**Deployment Flow:**
+**Expected Production Output:**
 
 ```
-1. 🔄 Authenticate with Flyway
-2. ✅ Deploy to UAT (automatic)
-3. ⏸️  Wait for production approval
-4. 👥 Manual approval required
-5. ✅ Deploy to Production (after approval)
+✅ Production approval granted by [approver-name]
+✅ Connected to AutoPilotProd database
+✅ V005 wishlist feature deployed to Production
+✅ Production deployment completed successfully
+✅ No drift detected across all environments
 ```
 
-## Step 7: Post-Deployment Verification
+### 6. Complete Pipeline Success
+
+**Final Status Should Show:**
+
+```
+Build Environment    → ✅ Clean validation completed
+Test Environment     → ✅ UAT deployment successful
+Prod Environment     → ✅ Production deployment successful
+```
+
+## Step 8: Post-Deployment Verification
 
 ### 1. Review Deployment Reports
 
-After successful completion:
+After successful completion of all three stages:
 
-1. **Check the workflow output** for deployment status
-2. **Review migration reports** generated by Flyway
-3. **Verify no errors** or drift detected
+1. **Check the workflow output** for overall deployment status
+2. **Download deployment reports** from workflow artifacts
+3. **Review each environment's migration status**
 
 **Expected Success Output:**
 
 ```
-✅ Authentication successful
-✅ Connected to db-autopilot-uat-001
-✅ UAT Database schema updated successfully
-⏳ Waiting for production approval...
-✅ Production approval granted by [approver-name]
-✅ Connected to db-autopilot-prod-001
-✅ Production database schema updated successfully
-✅ No drift detected in any environment
+✅ Build Environment (AutoPilotBuild):
+   - Database cleaned and rebuilt successfully
+   - All migrations V001-V005 applied
+   - Undo scripts validated
+
+✅ Test Environment (AutoPilotTest):
+   - V005 wishlist feature deployed successfully
+   - Check reports generated
+   - No drift detected
+
+✅ Prod Environment (AutoPilotProd):
+   - Production approval granted
+   - V005 wishlist feature deployed successfully
+   - Production deployment completed
 ```
 
 ![Deployment Success](../../../assets/images/labs/lab6-deployment-success.png)
 
-### 2. Verify Wishlist Feature in UAT
+### 2. Verify Wishlist Feature in Test Environment
 
-Connect to your UAT database and verify the wishlist feature was deployed:
+Connect to your `AutoPilotTest` database and verify the wishlist feature was deployed:
 
 ```sql
 -- Verify tables were created
@@ -395,13 +521,30 @@ FROM INFORMATION_SCHEMA.VIEWS
 WHERE TABLE_NAME = 'CustomerWishlistAnalytics'
 
 -- Check migration history
-SELECT * FROM flyway_schema_history
+SELECT * FROM flyway_schema_history ORDER BY version_rank
 ```
 
-### 3. Test Wishlist Functionality in UAT
+**Expected Results:**
+
+```
+CustomerWishlists     Sales
+WishlistItems        Sales
+CustomerWishlistAnalytics  Sales
+
+Migration History:
+001 | baseline
+002 | Welcome
+003 | Add Customer Loyalty
+004 | Enhanced Product Catalog
+005 | Add Customer Wishlist Feature  ← Your new migration!
+```
+
+### 3. Verify Wishlist Feature in Production Environment
+
+Connect to your `AutoPilotProd` database and run the same verification:
 
 ```sql
--- Test the wishlist analytics view
+-- Test the wishlist analytics view in production
 SELECT
     CompanyName,
     WishlistName,
@@ -409,30 +552,58 @@ SELECT
     TotalWishlistValue
 FROM Sales.CustomerWishlistAnalytics
 ORDER BY TotalWishlistValue DESC
+
+-- Verify production migration history matches test
+SELECT version, description, success
+FROM flyway_schema_history
+WHERE success = 1
+ORDER BY version_rank
 ```
+
+### 4. Clean Build Database Verification
+
+The `AutoPilotBuild` database should be empty after the build stage (as expected):
+
+```sql
+-- Build database should be clean (no application tables)
+SELECT COUNT(*) as TableCount
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA')
+
+-- Only flyway_schema_history should remain
+SELECT TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA NOT IN ('sys', 'INFORMATION_SCHEMA')
+```
+
+**Expected Result:** Only `flyway_schema_history` table should exist (build database gets cleaned each run).
 
 ## Key Concepts Learned
 
 ### CI/CD Database Automation
 
-- **Automated Deployment**: Database changes deploy automatically via GitHub Actions
-- **Environment Progression**: Code flows from development → UAT → production
-- **Configuration as Code**: Pipeline behavior defined in YAML files
-- **Secure Authentication**: Personal Access Tokens provide secure license authentication
+- **Three-Stage Pipeline**: Build validation → Test deployment → Production deployment
+- **Environment Isolation**: Each stage uses dedicated databases with identical schemas
+- **Clean Build Validation**: Build stage ensures all migrations work from scratch
+- **Automated Progression**: Test deployment happens automatically after successful build
+- **Manual Production Gate**: Production requires explicit approval for safety
+- **Artifact Management**: Build stage creates validated migration packages for downstream stages
 
 ### Flyway Enterprise Integration
 
-- **Project-Based Configuration**: Workflows read from flyway.toml for environment details
-- **Migration Orchestration**: Flyway handles version sequencing and dependency management
-- **Drift Detection**: Automatic detection of unauthorized schema changes
-- **Deployment Reports**: Comprehensive logging and status reporting
+- **Environment-Specific Configuration**: `2.flyway-pipeline.toml` defines database connections per environment
+- **Migration Orchestration**: Flyway handles version sequencing across all environments
+- **Drift Detection**: Automatic detection of unauthorized schema changes during deployments
+- **Rollback Capability**: Undo scripts validated in build stage for production safety
+- **Deployment Reports**: Comprehensive logging and status reporting across pipeline stages
 
-### DevOps Best Practices
+### GitHub Actions Best Practices
 
-- **Infrastructure as Code**: Deployment pipelines defined in version control
-- **Secret Management**: Sensitive credentials stored securely in GitHub Secrets
-- **Self-Hosted Execution**: Control over deployment environment and security
-- **Audit Trail**: Complete history of deployments and changes
+- **Environment Secrets Management**: Each environment maintains isolated secret configuration
+- **Approval Gates**: Production environment requires manual reviewer approval
+- **Self-Hosted Execution**: Control over deployment environment and database connectivity
+- **Audit Trail**: Complete history of deployments, approvals, and changes
+- **Pipeline as Code**: Deployment workflows defined and versioned in source control
 
 ## What You've Accomplished
 
@@ -451,16 +622,19 @@ Throughout this course, you have:
 
 - ✅ **Baseline Deployment**: Complete e-commerce platform with customers, products, orders
 - ✅ **Feature Enhancement**: Added customer loyalty program and product reviews
-- ✅ **Schema Evolution**: Captured and deployed wishlist functionality
-- ✅ **Automated Pipeline**: Set up continuous deployment for future changes
+- ✅ **Schema Evolution**: Captured and deployed wishlist functionality using AutoPilot
+- ✅ **Clean Build Validation**: Verified all migrations work from scratch in build environment
+- ✅ **Multi-Environment Pipeline**: Deployed through Test → Production with approval gates
+- ✅ **Production Readiness**: Wishlist feature now live in production environment
 
 ### Technical Mastery Achieved
 
-- ✅ **Database DevOps**: End-to-end automated database change management
-- ✅ **Version Control**: Git-based workflow for database schema evolution
-- ✅ **Migration Management**: Flyway-based versioned migration deployment
-- ✅ **CI/CD Integration**: GitHub Actions pipeline for automated deployments
-- ✅ **Enterprise Practices**: Security, auditing, and deployment best practices
+- ✅ **Database DevOps**: End-to-end automated database change management with CI/CD
+- ✅ **Version Control**: Git-based workflow for database schema evolution and collaboration
+- ✅ **Migration Management**: Flyway-based versioned migration deployment across environments
+- ✅ **CI/CD Integration**: GitHub Actions pipeline with build validation and approval gates
+- ✅ **Enterprise Practices**: Security, auditing, environment isolation, and deployment best practices
+- ✅ **Configuration Management**: Environment-specific configuration with `2.flyway-pipeline.toml`
 
 ## Next Steps
 
