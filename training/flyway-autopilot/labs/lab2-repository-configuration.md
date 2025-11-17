@@ -32,17 +32,26 @@ In this lab, you'll clone the official Database DevOps AutoPilot training reposi
 - Access to Azure SQL Database (provided in training)
 - GitHub account (optional, for forking)
 
-## Step 1: Clone the Training Repository
+## Step 1: Fork and Clone the Training Repository
 
-### 1. Clone the Repository
+### 1. Fork the Repository (Create Your Own Copy)
 
-Choose one of the following approaches:
+First, you'll create your own copy of the training repository on GitHub:
 
-#### Option A: Direct Clone (Recommended for Training)
+1. **Go to the training repository**: [https://github.com/LetsMakeStuffGo/database-devops-autopilot](https://github.com/LetsMakeStuffGo/database-devops-autopilot)
+2. **Click the "Fork" button** in the top-right corner of the page
+3. **Choose your GitHub account** as the destination for the fork
+4. **Wait for GitHub to create your fork** - this creates `https://github.com/yourusername/database-devops-autopilot`
+
+> **Why Fork?** This creates your own copy that you can modify, commit to, and use throughout all the labs. It's the standard workflow for contributing to projects and gives you full control over your learning environment.
+
+### 2. Clone Your Forked Repository
+
+Now clone YOUR forked version to your local machine:
 
 ```bash
-# Clone the repository to your local machine
-git clone https://github.com/LetsMakeStuffGo/database-devops-autopilot.git
+# Clone YOUR forked repository (replace 'yourusername' with your actual GitHub username)
+git clone https://github.com/yourusername/database-devops-autopilot.git
 
 # Navigate to the project directory
 cd database-devops-autopilot
@@ -51,7 +60,28 @@ cd database-devops-autopilot
 ls -la
 ```
 
-### 2. Explore the Repository Structure
+> **Important**: Make sure you're cloning from YOUR GitHub account (yourusername), not the original LetsMakeStuffGo account!
+
+### 3. Verify Your Fork Setup
+
+Confirm everything is set up correctly:
+
+```bash
+# Check your remote repository configuration
+git remote -v
+
+# You should see something like:
+# origin  https://github.com/yourusername/database-devops-autopilot.git (fetch)
+# origin  https://github.com/yourusername/database-devops-autopilot.git (push)
+```
+
+**Perfect!** You now have:
+✅ Your own fork of the training repository  
+✅ Full read/write access to commit and push changes  
+✅ A complete local copy ready for Flyway Desktop  
+✅ The ability to use Git throughout all labs
+
+### 4. Explore the Repository Structure
 
 After cloning, explore what you've downloaded:
 
@@ -88,9 +118,9 @@ database-devops-autopilot/
         └── labs/                      # Lab instructions (this file!)
 ```
 
-### 3. Understanding the Repository Components
+### 5. Understanding the Repository Components
 
-This repository contains everything you need for Database DevOps with Flyway AutoPilot:
+This forked repository contains everything you need for Database DevOps with Flyway AutoPilot:
 
 **🗄️ Database Components:**
 
@@ -346,7 +376,26 @@ password = "your-assigned-password"
 
 > **Note**: This approach ensures stable performance during training and gives everyone their own isolated environment to work with.
 
-## Step 3: Connect Repository to Flyway Desktop
+## Benefits of the Fork + Personal Database Approach
+
+This training setup gives you the best of both worlds:
+
+**✅ Your Own Repository (via Fork):**
+
+- Full Git control - commit, push, and track your progress
+- Personal learning space you can modify freely
+- Real-world GitHub workflow experience
+- All labs work seamlessly (especially Lab 4 version control)
+- Your work becomes part of your portfolio
+
+**✅ Your Own Database Environment (via Hamish):**
+
+- Isolated databases prevent server crashes
+- No interference from other students
+- Realistic multi-environment setup
+- Personalized learning experience
+
+**🎯 Professional Workflow**: This fork → personal databases → commit → push approach mirrors exactly how you'll work in professional development teams!## Step 3: Connect Repository to Flyway Desktop
 
 ### 1. Open Project in Flyway Desktop
 
@@ -440,7 +489,7 @@ Now that you've successfully connected your repository to Flyway Desktop:
 
 ## Database Environments Overview
 
-Your configuration is ready with these environments (using Azure SQL Database):
+Your configuration is ready with these environments, this is for `2.flyway-pipeline.toml` (using Azure SQL Database):
 
 | Environment | Purpose                  | Environment Variable   | Example Database Name   |
 | ----------- | ------------------------ | ---------------------- | ----------------------- |
@@ -468,9 +517,10 @@ FLYWAY_PROD_DATABASE=db-autopilot-prod-xxx
 
 ## Reference Materials
 
-This lab uses the official Database DevOps AutoPilot training repository:
+This lab uses your forked copy of the official Database DevOps AutoPilot training repository:
 
-- **[Training Repository](https://github.com/LetsMakeStuffGo/database-devops-autopilot)** - Complete source code and examples
+- **[Your Forked Repository](https://github.com/yourusername/database-devops-autopilot)** - Your own copy for hands-on learning
+- **[Original Training Repository](https://github.com/LetsMakeStuffGo/database-devops-autopilot)** - The source repository you forked from
 - **[Official SQL Server FastTrack](https://github.com/red-gate/Flyway-AutoPilot-FastTrack)** - Reference implementation patterns
 - **[Official Repository Setup Guide](https://documentation.red-gate.com/flyway/getting-started-with-flyway/first-steps-flyway-autopilot-a-beginners-guide/flyway-autopilot-fasttrack/2-getting-your-repository-ready)**
 - **[Flyway Desktop Documentation](https://documentation.red-gate.com/flyway/getting-started-with-flyway/installers)**

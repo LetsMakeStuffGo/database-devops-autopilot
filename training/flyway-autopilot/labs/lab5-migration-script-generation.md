@@ -71,7 +71,7 @@ You should see the same changes that were detected in Lab 4, now ready for migra
 
 ```
 ✅ Shadow database did not need to be reprovisioned.
-✅ Successfully migrated shadow database to version 004. 4 migrations executed.
+✅ Successfully migrated shadow database to version 004. 0 migrations executed.
 ```
 
 ### 3. Review Detected Changes
@@ -83,11 +83,8 @@ AutoPilot will show you the same changes from Lab 4, now ready for migration scr
 ```
 Object Name              | Change Type | Object Type | Schema
 -------------------------|-------------|-------------|----------
-InventoryAudit          | 🔧 Modify   | Table       | Operation
-ProductReviews          | 🔧 Modify   | Table       | Operation
-CustomerLoyalty         | 🔧 Modify   | Table       | Sales
-CustomerWishlists       | ➕ Create   | Table       | Sales
-WishlistItems          | ➕ Create   | Table       | Sales
+CustomerWishlists        | ➕ Create   | Table       | Sales
+WishlistItems            | ➕ Create   | Table       | Sales
 CustomerWishlistAnalytics| ➕ Create   | View        | Sales
 ```
 
@@ -108,9 +105,9 @@ CustomerWishlistAnalytics| ➕ Create   | View        | Sales
 
 **Recommended Selections:**
 
-- ✅ **InventoryAudit** (Modify) - Include minor schema updates
-- ✅ **ProductReviews** (Modify) - Include minor schema updates
-- ✅ **CustomerLoyalty** (Modify) - Include minor schema updates
+- ✅ **InventoryAudit** (Modify) - Include minor schema updates (if exist)
+- ✅ **ProductReviews** (Modify) - Include minor schema updates (if exist)
+- ✅ **CustomerLoyalty** (Modify) - Include minor schema updates (if exist)
 - ✅ **CustomerWishlists** (Create) - Your new wishlist table
 - ✅ **WishlistItems** (Create) - Your wishlist items table
 - ✅ **CustomerWishlistAnalytics** (Create) - Your wishlist analytics view
@@ -157,8 +154,9 @@ Flyway will generate the migration script based on your selected changes. You'll
 1. **Review the generated script** for accuracy
 2. **Make any final adjustments** if necessary (usually not required)
 3. **Click "Save"** to add the migration script to your project
+   The migration script is now saved in your `migrations/` folder and ready for deployment! Have a look to see if it's there!
 
-The migration script is now saved in your `migrations/` folder and ready for deployment!
+![Migration Generation Success](../../../assets/images/labs/lab5-generate_migrations_success.png)
 
 ## Step 3: Verify and Commit Changes
 
@@ -176,16 +174,12 @@ Before committing the script, it's good practice to verify its accuracy:
 **Expected Verification Result:**
 
 ```
-✅ Migration V005__Add_Customer_Wishlist_Feature.sql verified successfully
-✅ All dependencies resolved correctly
-✅ No syntax errors detected
-✅ Undo script U005__Add_Customer_Wishlist_Feature.sql validated
+Shadow database did not need to be reprovisioned.
+Successfully migrated shadow database to version 005. 1 migration executed.
 ```
 
 3. **If verification passes**, proceed to commit
 4. **If issues are found**, review and fix before committing
-
-![Migration Verification](../../../assets/images/labs/lab5-generate_migrations_6.png)
 
 ### 2. Review Uncommitted Changes
 
@@ -198,7 +192,6 @@ Before committing the script, it's good practice to verify its accuracy:
 ```
 migrations/V005__Add_Customer_Wishlist_Feature.sql
 migrations/U005__Add_Customer_Wishlist_Feature.sql (undo script)
-flyway.toml (updated project metadata)
 ```
 
 4. **Click on each file** to review the generated content and ensure accuracy
@@ -243,9 +236,9 @@ Your migration script is now ready for deployment to:
 
 **Target Environments:**
 
-- ✅ **Shadow Database** (`db-autopilot-shadow-001`) - For migration validation and testing
-- ✅ **UAT Database** (`db-autopilot-uat-001`) - For user acceptance testing
-- ✅ **Production Database** (`db-autopilot-prod-001`) - For live deployment
+- ✅ **Shadow Database** (`db-autopilot-shadow-xxx`) - For migration validation and testing
+- ✅ **UAT Database** (`db-autopilot-uat-xxx`) - For user acceptance testing
+- ✅ **Production Database** (`db-autopilot-prod-xxx`) - For live deployment
 - ✅ **CI/CD Pipelines** - For automated deployment processes across all environments
 
 ### 3. What Happens During Deployment

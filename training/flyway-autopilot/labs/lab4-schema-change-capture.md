@@ -38,10 +38,10 @@ Before we start capturing schema changes, let's review the **4-environment setup
 
 ### **Environment Roles:**
 
-1. **Development** (`db-autopilot-dev-001`): Active development and feature testing
-2. **Shadow** (`db-autopilot-shadow-001`): Clean validation database for migration testing
-3. **UAT** (`db-autopilot-uat-001`): User acceptance testing environment
-4. **Production** (`db-autopilot-prod-001`): Live production environment
+1. **Development** (`db-autopilot-dev-xxx`): Active development and feature testing
+2. **Shadow** (`db-autopilot-shadow-xxx`): Clean validation database for migration testing
+3. **UAT** (`db-autopilot-uat-xxx`): User acceptance testing environment
+4. **Production** (`db-autopilot-prod-xxx`): Live production environment
 
 ### **Shadow Database Purpose:**
 
@@ -62,7 +62,7 @@ Before starting this lab, we need to ensure your schema model accurately reflect
 
 **Clean up any existing wishlist artifacts:**
 
-1. **Navigate to your project folder** in File Explorer/Finder
+1. **Navigate to your project folder** in File Explorer/Finder or in VS Code
 2. **Go to the `schema-model/` folder**
 3. **Look for any wishlist-related files** in:
    - `schema-model/Tables/Sales/` (CustomerWishlists.sql, WishlistItems.sql)
@@ -74,7 +74,7 @@ Before starting this lab, we need to ensure your schema model accurately reflect
 
 1. **Open Flyway Desktop** and ensure your project is loaded
 2. **Switch to the Schema Model tab**
-3. **Click Refresh** to scan your `db-autopilot-dev-001` database
+3. **Click Refresh** to scan your assigned development database
 
 Since you completed all migrations in Lab 3, Flyway Desktop should show **'No changes found'** - this indicates your database schema is synchronized with your schema model.
 
@@ -112,12 +112,12 @@ Now let's enhance our e-commerce platform by adding new functionality. We'll add
 **Using VS Code:**
 
 1. Open Command Palette (Ctrl+Shift+P)
-2. Type "MS SQL: Connect" and select your `db-autopilot-dev-001` connection
+2. Type "MS SQL: Connect" and select your assigned development database connection
 
 **Using SSMS:**
 
 1. Connect to your Azure SQL Database server
-2. Select the `db-autopilot-dev-001` database
+2. Select your assigned development database
 
 ### 2. Add a Product Wishlist Feature
 
@@ -127,13 +127,13 @@ Before running any SQL scripts, verify you're connected to your **development da
 
 **Using VS Code:**
 
-- Check the bottom status bar shows: `sqlbits.database.windows.net (db-autopilot-dev-001)`
-- If not, use Command Palette → "MS SQL: Connect" and select `db-autopilot-dev-001`
+- Check the bottom status bar shows: `your-server.database.windows.net (your-assigned-dev-db)`
+- If not, use Command Palette → "MS SQL: Connect" and select your assigned development database
 
 **Using SSMS:**
 
-- Check the Object Explorer shows you're connected to `db-autopilot-dev-001`
-- If not, right-click server → "New Query" → select `db-autopilot-dev-001` from dropdown
+- Check the Object Explorer shows you're connected to your assigned development database
+- If not, right-click server → "New Query" → select your development database from dropdown
 
 Let's add tables to support a customer wishlist system. Execute this SQL in your **development** database:
 
@@ -269,7 +269,7 @@ Notice how AutoPilot:
    - Sales.CustomerWishlists table
    - Sales.WishlistItems table
    - Sales.CustomerWishlistAnalytics view
-2. **Click "Save to Project"**
+2. **Click "Save"**
 3. **Review the save confirmation** - Flyway will show what's being added to your schema model
 
 ![Change](../../../assets/images/labs/lab4-capture_change_2.png)
@@ -360,8 +360,10 @@ Development Database:           Shadow Database:
 ### 1. Review Uncommitted Changes
 
 1. **In Flyway Desktop**, look for the **Version Control** panel (usually on the right side)
-2. **Click on "Uncommitted Changes"**
+2. **Click on "Uncommitted Changes"** or **Commit**
 3. **Review the files** that AutoPilot created:
+
+![Commit](../../../assets/images/labs/lab4-commit.png)
 
 You should see files similar to:
 
@@ -370,6 +372,7 @@ schema-model/Tables/Sales/CustomerWishlists.sql
 schema-model/Tables/Sales/WishlistItems.sql
 schema-model/Views/Sales/CustomerWishlistAnalytics.sql
 RedGateDatabaseInfo.xml (technical metadata)
+Others files like InventoryAudit and others.
 ```
 
 **Review these files** by clicking on each one to examine the clean DDL scripts that AutoPilot generated.
@@ -389,6 +392,8 @@ RedGateDatabaseInfo.xml (technical metadata)
    ```
 
 3. **Click "Commit and Push"** (or "Commit" then "Push Changes")
+
+4. **You might be prompted to sign in to your GitHub account**
 
 **You have successfully committed your first schema changes using Flyway AutoPilot.**
 
