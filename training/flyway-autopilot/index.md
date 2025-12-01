@@ -1,6 +1,6 @@
 ---
 layout: single
-title: Flyway Autopilot Training
+title: Training
 description: Master database DevOps with automated migration pipelines
 toc: true
 toc_label: "Training Contents"
