@@ -7,7 +7,7 @@ toc_label: "Training Contents"
 toc_icon: "graduation-cap"
 ---
 
-# Flyway AutoPilot Training
+# Flyway AutoPilot
 
 Transform your database deployment process with intelligent, automated migration detection and generation using Azure SQL Database.
 
