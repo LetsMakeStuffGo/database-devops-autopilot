@@ -7,9 +7,7 @@ toc_label: "Requirements"
 toc_icon: "clipboard-check"
 ---
 
-# Prerequisites
-
-## Required Software
+# Required Software
 
 ### Core Development Tools
 
