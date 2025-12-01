@@ -70,7 +70,7 @@ You'll master enterprise-grade database DevOps practices using Flyway's powerful
 
 ### Hamish Watson
 
-Hamish Watson is a Microsoft Data Platform MVP with a passion for efficient database & application deployments using DevOps methodologies.
+Hamish Watson is a dual Microsoft MVP [AI Platform and Data Platform](https://mvp.microsoft.com/en-US/MVP/profile/b4d6fe2f-a042-e711-8112-3863bb2ed1f8) with a passion for efficient database & application deployments using DevOps methodologies.
 
 He has formed his own company – **Morph iT Limited** – based in Christchurch, New Zealand and provides consultancy services for many clients in the US, Canada, UK, Australia and NZ.
 
